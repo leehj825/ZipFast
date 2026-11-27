@@ -44,6 +44,12 @@ kotlin {
     }
 }
 
+dependencies {
+    // Same net.sf.sevenzipjbinding API that android/engine-test exercises on the host JVM,
+    // with the native .so files for Android ABIs bundled.
+    implementation("com.github.omicronapps:7-Zip-JBinding-4Android:Release-16.02-2.02")
+}
+
 flutter {
     source = "../.."
 }

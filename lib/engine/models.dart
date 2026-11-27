@@ -99,7 +99,7 @@ class JobProgress {
   double? get fraction => total <= 0 ? null : (done / total).clamp(0.0, 1.0);
 }
 
-enum CreateFormat { zip, tarGz }
+enum CreateFormat { zip, sevenZip, tarGz }
 
 enum CompressionLevel { store, fast, normal, maximum }
 
@@ -110,6 +110,7 @@ class CreateRequest {
     this.format = CreateFormat.zip,
     this.level = CompressionLevel.normal,
     this.password,
+    this.splitSizeBytes = 0,
     this.tempDir = '',
   });
 
@@ -118,8 +119,12 @@ class CreateRequest {
   final CreateFormat format;
   final CompressionLevel level;
 
-  /// AES-256 password (ZIP only).
+  /// AES-256 password (ZIP and 7Z).
   final String? password;
+
+  /// When positive, the finished archive is cut into volumes of this many
+  /// bytes named `<archive>.001`, `<archive>.002`, ... (7-Zip compatible).
+  final int splitSizeBytes;
   final String tempDir;
 }
 

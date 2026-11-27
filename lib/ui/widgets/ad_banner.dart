@@ -1,23 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
 
 import '../../l10n/gen/app_localizations.dart';
-import '../../state/app_state.dart';
 
 /// Home-screen banner slot.
 ///
 /// This is the single integration point for an adaptive AdMob banner
 /// (`google_mobile_ads`). Until that is wired in, debug builds show a labelled
 /// placeholder so the layout can be checked, and release builds show nothing.
-/// Never shown to Pro users. Keep at least 16dp of clearance above it.
+///  Keep at least 16dp of clearance above it.
 class AdBannerSlot extends StatelessWidget {
   const AdBannerSlot({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isPro = context.select<AppState, bool>((s) => s.isPro);
-    if (isPro || !kDebugMode) return const SizedBox.shrink();
+    if (!kDebugMode) return const SizedBox.shrink();
     final scheme = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,

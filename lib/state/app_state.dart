@@ -13,7 +13,6 @@ class AppState extends ChangeNotifier {
       orElse: () => ThemeMode.system,
     );
     _localeCode = _prefs.getString(_kLocale);
-    _isPro = _prefs.getBool(_kPro) ?? false;
     _conflict = ConflictPolicy.values.firstWhere(
       (c) => c.name == _prefs.getString(_kConflict),
       orElse: () => ConflictPolicy.rename,
@@ -23,7 +22,6 @@ class AppState extends ChangeNotifier {
 
   static const _kTheme = 'theme_mode';
   static const _kLocale = 'locale';
-  static const _kPro = 'is_pro';
   static const _kConflict = 'conflict_policy';
   static const _kHistory = 'history';
   static const maxHistory = 50;
@@ -32,7 +30,6 @@ class AppState extends ChangeNotifier {
 
   late ThemeMode _themeMode;
   String? _localeCode;
-  late bool _isPro;
   late ConflictPolicy _conflict;
   late List<String> _history;
 
@@ -42,8 +39,6 @@ class AppState extends ChangeNotifier {
   Locale? get locale => _localeCode == null ? null : Locale(_localeCode!);
   String? get localeCode => _localeCode;
 
-  /// Whether the one-time Pro purchase is active.
-  bool get isPro => _isPro;
   ConflictPolicy get defaultConflict => _conflict;
 
   /// Paths of archives the user opened recently, newest first.
@@ -69,13 +64,6 @@ class AppState extends ChangeNotifier {
     _conflict = policy;
     notifyListeners();
     await _prefs.setString(_kConflict, policy.name);
-  }
-
-  /// Debug-only switch until real billing is wired in.
-  Future<void> setPro(bool value) async {
-    _isPro = value;
-    notifyListeners();
-    await _prefs.setBool(_kPro, value);
   }
 
   Future<void> addToHistory(String path) async {

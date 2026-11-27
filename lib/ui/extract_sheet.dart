@@ -8,7 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import '../encoding/name_encoding.dart';
-import '../engine/archive_engine.dart';
+import '../engine/composite_engine.dart';
 import '../engine/models.dart';
 import '../engine/safe_path.dart';
 import '../l10n/gen/app_localizations.dart';
@@ -125,7 +125,7 @@ class _ExtractSheetState extends State<_ExtractSheet> {
     if (fellBack) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.destFallbackNote)));
     }
-    final handle = const DartArchiveEngine().extract(request);
+    final handle = appEngine.extract(request);
     await showJobDialog<ExtractResult>(
       parentContext,
       handle,

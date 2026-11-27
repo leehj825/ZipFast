@@ -15,7 +15,6 @@ import 'create_sheet.dart';
 import 'settings_page.dart';
 import 'widgets/ad_banner.dart';
 import 'widgets/format_badge.dart';
-import 'widgets/pro_sheet.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,8 +36,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isPro = context.select<AppState, bool>((s) => s.isPro);
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -61,14 +58,6 @@ class _HomePageState extends State<HomePage> {
                 _searching = !_searching;
                 _query.value = '';
               }),
-            ),
-            IconButton(
-              tooltip: l10n.proTitle,
-              icon: Icon(
-                Icons.workspace_premium,
-                color: isPro ? ZipFastColors.lockAmber : null,
-              ),
-              onPressed: () => showProSheet(context),
             ),
             IconButton(
               tooltip: l10n.settings,

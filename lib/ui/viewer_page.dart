@@ -6,7 +6,7 @@ import '../core/archive_format.dart';
 import '../core/format_utils.dart';
 import '../core/theme.dart';
 import '../encoding/name_encoding.dart';
-import '../engine/archive_engine.dart';
+import '../engine/composite_engine.dart';
 import '../engine/models.dart';
 import '../engine/safe_path.dart';
 import '../l10n/gen/app_localizations.dart';
@@ -38,8 +38,6 @@ class ViewerPage extends StatefulWidget {
 }
 
 class _ViewerPageState extends State<ViewerPage> {
-  static const _engine = DartArchiveEngine();
-
   ArchiveListing? _listing;
   Object? _error;
   bool _loading = true;
@@ -61,7 +59,7 @@ class _ViewerPageState extends State<ViewerPage> {
     });
     final storage = context.read<StorageService>();
     try {
-      final listing = await _engine.list(
+      final listing = await appEngine.list(
         widget.path,
         encoding: _encoding,
         password: _password,
@@ -157,7 +155,7 @@ class _ViewerPageState extends State<ViewerPage> {
       return;
     }
     try {
-      final bytes = await _engine.readEntry(
+      final bytes = await appEngine.readEntry(
         widget.path,
         node.path,
         encoding: _encoding,

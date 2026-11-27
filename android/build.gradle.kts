@@ -2,6 +2,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        // 7-Zip-JBinding for Android (native 7-Zip: RAR5, 7Z, ISO, CAB, encryption)
+        maven(url = "https://jitpack.io")
     }
 }
 

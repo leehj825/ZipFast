@@ -16,9 +16,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTagline => '모든 압축 파일을 오프라인으로. 전면 광고 없이.';
 
   @override
-  String get proBadge => 'PRO';
-
-  @override
   String get settings => '설정';
 
   @override
@@ -70,13 +67,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get createArchive => '압축하기';
 
   @override
-  String get createArchiveSub => 'ZIP, TAR.GZ';
+  String get createArchiveSub => 'ZIP, 7Z, TAR.GZ';
 
   @override
   String get extractArchive => '압축 풀기';
 
   @override
-  String get extractArchiveSub => 'ZIP, TAR, GZ, BZ2, XZ';
+  String get extractArchiveSub => 'ZIP, RAR, 7Z, TAR, ISO…';
 
   @override
   String get encodingFixTitle => '파일명 깨짐 복구';
@@ -192,8 +189,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get unsupportedBody =>
-      '이 빌드는 ZIP, TAR, GZ, BZ2, XZ를 지원합니다. RAR, 7Z, ISO, CAB는 네이티브 엔진(libarchive + UnRAR)이 필요하며 아직 포함되지 않았습니다.';
+  String get unsupportedBody => '이 형식은 7-Zip 엔진이 필요하며, 안드로이드 앱에서만 사용할 수 있습니다.';
 
   @override
   String get corruptTitle => '압축 파일을 열 수 없습니다';
@@ -292,16 +288,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get passwordProtect => '비밀번호 잠금 (AES-256)';
 
   @override
-  String get passwordProtectSub => 'ZIP 전용';
+  String get passwordProtectSub => 'ZIP, 7Z 전용';
 
   @override
   String get splitArchive => '분할 압축';
 
   @override
-  String get splitArchiveSub => '준비 중';
-
-  @override
-  String get proFeature => 'Pro';
+  String get splitArchiveSub => '볼륨으로 나누기 (.001, .002, …)';
 
   @override
   String get createButton => '만들기';
@@ -329,34 +322,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pickFiles => '파일 선택';
 
   @override
-  String get proTitle => 'ZipFast Pro';
+  String get splitSize => '볼륨 크기';
 
   @override
-  String get proIntro => '일회성 결제. 모든 형식의 압축 해제는 계속 무료입니다.';
+  String splitSizeMb(int mb) {
+    return '$mb MB';
+  }
 
   @override
-  String get proFeatureAds => '모든 광고 제거';
+  String get splitCustomMb => '직접 입력 (MB)';
 
   @override
-  String get proFeatureAes => 'AES-256 암호화 압축';
+  String get splitTooSmall => '1MB 이상의 크기를 입력하세요.';
 
   @override
-  String get proFeatureSplit => '분할 압축';
-
-  @override
-  String get proFeatureBatch => '일괄 해제 및 암호 즐겨찾기';
-
-  @override
-  String get proUnavailable => '이 빌드에서는 아직 결제를 지원하지 않습니다.';
-
-  @override
-  String get proDebugUnlock => '잠금 해제 (디버그 빌드)';
-
-  @override
-  String get proDebugLock => '다시 잠그기 (디버그 빌드)';
-
-  @override
-  String get proActive => 'Pro 사용 중';
+  String get splitVolumesNote => '볼륨 이름은 .001, .002, … 입니다. 풀 때는 .001 파일을 여세요.';
 
   @override
   String get settingsTitle => '설정';

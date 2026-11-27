@@ -110,12 +110,6 @@ abstract class AppLocalizations {
   /// **'Extract anything. Offline. No fullscreen ads.'**
   String get appTagline;
 
-  /// No description provided for @proBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'PRO'**
-  String get proBadge;
-
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
@@ -215,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @createArchiveSub.
   ///
   /// In en, this message translates to:
-  /// **'ZIP, TAR.GZ'**
+  /// **'ZIP, 7Z, TAR.GZ'**
   String get createArchiveSub;
 
   /// No description provided for @extractArchive.
@@ -227,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @extractArchiveSub.
   ///
   /// In en, this message translates to:
-  /// **'ZIP, TAR, GZ, BZ2, XZ'**
+  /// **'ZIP, RAR, 7Z, TAR, ISO…'**
   String get extractArchiveSub;
 
   /// No description provided for @encodingFixTitle.
@@ -437,7 +431,7 @@ abstract class AppLocalizations {
   /// No description provided for @unsupportedBody.
   ///
   /// In en, this message translates to:
-  /// **'This build handles ZIP, TAR, GZ, BZ2 and XZ. RAR, 7Z, ISO and CAB need the native engine (libarchive + UnRAR), which is not bundled yet.'**
+  /// **'This format needs the 7-Zip engine, which is only available in the Android app.'**
   String get unsupportedBody;
 
   /// No description provided for @corruptTitle.
@@ -623,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordProtectSub.
   ///
   /// In en, this message translates to:
-  /// **'ZIP only'**
+  /// **'ZIP and 7Z'**
   String get passwordProtectSub;
 
   /// No description provided for @splitArchive.
@@ -635,14 +629,8 @@ abstract class AppLocalizations {
   /// No description provided for @splitArchiveSub.
   ///
   /// In en, this message translates to:
-  /// **'Coming soon'**
+  /// **'Cut into volumes (.001, .002, …)'**
   String get splitArchiveSub;
-
-  /// No description provided for @proFeature.
-  ///
-  /// In en, this message translates to:
-  /// **'Pro'**
-  String get proFeature;
 
   /// No description provided for @createButton.
   ///
@@ -686,65 +674,35 @@ abstract class AppLocalizations {
   /// **'Pick files'**
   String get pickFiles;
 
-  /// No description provided for @proTitle.
+  /// No description provided for @splitSize.
   ///
   /// In en, this message translates to:
-  /// **'ZipFast Pro'**
-  String get proTitle;
+  /// **'Volume size'**
+  String get splitSize;
 
-  /// No description provided for @proIntro.
+  /// No description provided for @splitSizeMb.
   ///
   /// In en, this message translates to:
-  /// **'One-time purchase. Extraction of every format stays free.'**
-  String get proIntro;
+  /// **'{mb} MB'**
+  String splitSizeMb(int mb);
 
-  /// No description provided for @proFeatureAds.
+  /// No description provided for @splitCustomMb.
   ///
   /// In en, this message translates to:
-  /// **'Remove all ads'**
-  String get proFeatureAds;
+  /// **'Custom size (MB)'**
+  String get splitCustomMb;
 
-  /// No description provided for @proFeatureAes.
+  /// No description provided for @splitTooSmall.
   ///
   /// In en, this message translates to:
-  /// **'AES-256 encrypted archives'**
-  String get proFeatureAes;
+  /// **'Enter a size of at least 1 MB.'**
+  String get splitTooSmall;
 
-  /// No description provided for @proFeatureSplit.
+  /// No description provided for @splitVolumesNote.
   ///
   /// In en, this message translates to:
-  /// **'Split archives'**
-  String get proFeatureSplit;
-
-  /// No description provided for @proFeatureBatch.
-  ///
-  /// In en, this message translates to:
-  /// **'Batch extraction & password favorites'**
-  String get proFeatureBatch;
-
-  /// No description provided for @proUnavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'Purchases aren’t available in this build yet.'**
-  String get proUnavailable;
-
-  /// No description provided for @proDebugUnlock.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock (debug build)'**
-  String get proDebugUnlock;
-
-  /// No description provided for @proDebugLock.
-  ///
-  /// In en, this message translates to:
-  /// **'Lock again (debug build)'**
-  String get proDebugLock;
-
-  /// No description provided for @proActive.
-  ///
-  /// In en, this message translates to:
-  /// **'Pro is active'**
-  String get proActive;
+  /// **'Volumes are named .001, .002, … Open the .001 file to extract.'**
+  String get splitVolumesNote;
 
   /// No description provided for @settingsTitle.
   ///

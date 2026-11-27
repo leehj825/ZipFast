@@ -25,6 +25,7 @@ enum ArchiveFormat {
   static ArchiveFormat fromName(String fileName) {
     final n = fileName.toLowerCase();
     bool ends(String s) => n.endsWith(s);
+    if (ends('.zip.001')) return zip;
     if (ends('.tar.gz') || ends('.tgz')) return tarGz;
     if (ends('.tar.bz2') || ends('.tbz2') || ends('.tbz')) return tarBz2;
     if (ends('.tar.xz') || ends('.txz')) return tarXz;
@@ -102,6 +103,13 @@ enum ArchiveFormat {
   /// screen.
   static bool looksLikeArchive(String fileName) =>
       fromName(fileName) != unknown;
+
+  /// Whether [fileName] is one volume of a split archive (`.7z.001`,
+  /// `.zip.001`, `.part1.rar`, `.r00`, `.z01`). Those go to the native engine.
+  static bool isSplitName(String fileName) => RegExp(
+        r'(\.\d{3}|\.part\d+\.rar|\.r\d\d|\.z\d\d)$',
+        caseSensitive: false,
+      ).hasMatch(fileName);
 
   bool get isTarFamily =>
       this == tar || this == tarGz || this == tarBz2 || this == tarXz;

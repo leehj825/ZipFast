@@ -2,7 +2,6 @@
   "@@locale": "en",
   "appName": "ZipFast",
   "appTagline": "Extract anything. Offline. No fullscreen ads.",
-  "proBadge": "PRO",
   "settings": "Settings",
   "search": "Search",
   "searchHint": "Search archives",
@@ -26,9 +25,9 @@
   "noRecentBody": "Tap “Open archive” to pick a file, or open an archive from any app with “Open with ZipFast”.",
   "openArchive": "Open archive",
   "createArchive": "Create archive",
-  "createArchiveSub": "ZIP, TAR.GZ",
+  "createArchiveSub": "ZIP, 7Z, TAR.GZ",
   "extractArchive": "Extract archive",
-  "extractArchiveSub": "ZIP, TAR, GZ, BZ2, XZ",
+  "extractArchiveSub": "ZIP, RAR, 7Z, TAR, ISO…",
   "encodingFixTitle": "Encoding fix (broken text)",
   "encodingFixSub": "Repairs Korean, Japanese & Chinese file names",
   "aesSupported": "AES-256 encryption supported",
@@ -101,7 +100,7 @@
       }
     }
   },
-  "unsupportedBody": "This build handles ZIP, TAR, GZ, BZ2 and XZ. RAR, 7Z, ISO and CAB need the native engine (libarchive + UnRAR), which is not bundled yet.",
+  "unsupportedBody": "This format needs the 7-Zip engine, which is only available in the Android app.",
   "corruptTitle": "Couldn’t open this archive",
   "encryptedBadge": "Encrypted",
   "extractTitle": "Extract",
@@ -156,10 +155,9 @@
   "levelNormal": "Normal",
   "levelMaximum": "Maximum",
   "passwordProtect": "Password lock (AES-256)",
-  "passwordProtectSub": "ZIP only",
+  "passwordProtectSub": "ZIP and 7Z",
   "splitArchive": "Split archive",
-  "splitArchiveSub": "Coming soon",
-  "proFeature": "Pro",
+  "splitArchiveSub": "Cut into volumes (.001, .002, …)",
   "createButton": "Create",
   "creating": "Creating archive…",
   "createdTitle": "Archive created",
@@ -181,16 +179,18 @@
     }
   },
   "pickFiles": "Pick files",
-  "proTitle": "ZipFast Pro",
-  "proIntro": "One-time purchase. Extraction of every format stays free.",
-  "proFeatureAds": "Remove all ads",
-  "proFeatureAes": "AES-256 encrypted archives",
-  "proFeatureSplit": "Split archives",
-  "proFeatureBatch": "Batch extraction & password favorites",
-  "proUnavailable": "Purchases aren’t available in this build yet.",
-  "proDebugUnlock": "Unlock (debug build)",
-  "proDebugLock": "Lock again (debug build)",
-  "proActive": "Pro is active",
+  "splitSize": "Volume size",
+  "splitSizeMb": "{mb} MB",
+  "@splitSizeMb": {
+    "placeholders": {
+      "mb": {
+        "type": "int"
+      }
+    }
+  },
+  "splitCustomMb": "Custom size (MB)",
+  "splitTooSmall": "Enter a size of at least 1 MB.",
+  "splitVolumesNote": "Volumes are named .001, .002, … Open the .001 file to extract.",
   "settingsTitle": "Settings",
   "theme": "Theme",
   "themeSystem": "System",

@@ -448,6 +448,8 @@ Future<String> _create(
           report(JobProgress(i + 1, total, files[i].archiveName));
         }
         await enc.close();
+      case CreateFormat.sevenZip:
+        throw const UnsupportedFormatException(ArchiveFormat.sevenZip);
       case CreateFormat.tarGz:
         final dir = r.tempDir.isEmpty ? Directory.systemTemp.path : r.tempDir;
         final tmpTar = p.join(dir, 'zipfast_${pid}_${DateTime.now().microsecondsSinceEpoch}.tar');

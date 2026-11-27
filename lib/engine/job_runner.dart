@@ -13,9 +13,10 @@ class JobHandle<T> {
   final Completer<T> _result = Completer<T>();
   final StreamController<JobProgress> _progress =
       StreamController<JobProgress>.broadcast();
-  final ReceivePort _port = ReceivePort();
+  ReceivePort? _port;
   Isolate? _isolate;
   bool _finished = false;
+  void Function()? _onCancel;
 
   /// Completes with the job result, or fails with the job's exception
   /// ([JobCancelledException] after [cancel]).
@@ -30,10 +31,11 @@ class JobHandle<T> {
     Future<T> Function(void Function(JobProgress) report) task,
   ) {
     final handle = JobHandle<T>._();
-    handle._port.listen(handle._onMessage);
+    final port = handle._port = ReceivePort();
+    port.listen(handle._onMessage);
     Isolate.spawn<_Start<T>>(
       _entry<T>,
-      _Start<T>(handle._port.sendPort, task),
+      _Start<T>(port.sendPort, task),
     ).then((isolate) {
       if (handle._finished) {
         isolate.kill(priority: Isolate.immediate);
@@ -44,10 +46,35 @@ class JobHandle<T> {
     return handle;
   }
 
+  /// A handle driven by the caller, for work that does not run in a Dart
+  /// isolate (native engines, chained jobs). Call [reportProgress], then
+  /// [complete] or [fail]. [onCancel] is invoked once if the user cancels.
+  static JobHandle<T> manual<T>({void Function()? onCancel}) {
+    final handle = JobHandle<T>._();
+    handle._onCancel = onCancel;
+    return handle;
+  }
+
+  /// Publishes progress (for [manual] handles).
+  void reportProgress(JobProgress progress) {
+    if (!_finished && !_progress.isClosed) _progress.add(progress);
+  }
+
+  /// Finishes successfully (for [manual] handles).
+  void complete(T value) => _finish(value: value, hasValue: true);
+
+  /// Finishes with an error (for [manual] handles).
+  void fail(Object error) => _finish(error: error);
+
+  /// Whether the job has ended (successfully, with an error, or cancelled).
+  bool get isFinished => _finished;
+
   /// Stops the job as soon as possible.
   void cancel() {
     if (_finished) return;
+    final hook = _onCancel;
     _finish(error: const JobCancelledException());
+    hook?.call();
   }
 
   void _onMessage(dynamic message) {
@@ -64,7 +91,7 @@ class JobHandle<T> {
     if (_finished) return;
     _finished = true;
     _isolate?.kill(priority: Isolate.immediate);
-    _port.close();
+    _port?.close();
     if (hasValue) {
       _result.complete(value as T);
     } else {

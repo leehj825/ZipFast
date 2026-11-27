@@ -4,14 +4,13 @@ import 'package:material_ui/material_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
-import '../engine/archive_engine.dart';
+import '../engine/composite_engine.dart';
 import '../engine/models.dart';
 import '../engine/safe_path.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
 import 'widgets/job_dialog.dart';
-import 'widgets/pro_sheet.dart';
 
 /// Bottom sheet for creating an archive from [sources], followed by the
 /// progress dialog.
@@ -43,22 +42,33 @@ class _CreateSheetState extends State<_CreateSheet> {
   CompressionLevel _level = CompressionLevel.normal;
   bool _encrypt = false;
   bool _obscure = true;
+  bool _split = false;
+  int _splitMb = 25;
+  bool _customSplit = false;
+  final _customController = TextEditingController();
 
   @override
   void dispose() {
     _name.dispose();
     _password.dispose();
+    _customController.dispose();
     super.dispose();
   }
 
-  String get _extension => _format == CreateFormat.zip ? '.zip' : '.tar.gz';
+  String get _extension => switch (_format) {
+        CreateFormat.zip => '.zip',
+        CreateFormat.sevenZip => '.7z',
+        CreateFormat.tarGz => '.tar.gz',
+      };
+
+  bool get _canEncrypt => _format != CreateFormat.tarGz;
 
   Future<void> _create() async {
     final l10n = AppLocalizations.of(context);
     final storage = context.read<StorageService>();
-    final appState = context.read<AppState>();
     final navigator = Navigator.of(context);
     final parentContext = widget.parentContext;
+    final history = parentContext.read<AppState>();
 
     var base = _name.text.trim();
     if (base.isEmpty) base = 'Archive';
@@ -68,14 +78,23 @@ class _CreateSheetState extends State<_CreateSheet> {
       p.join(storage.createRoot, '$base$_extension'),
       (s) => FileSystemEntity.typeSync(s, followLinks: false) != FileSystemEntityType.notFound,
     );
-    final usePassword = _encrypt && _format == CreateFormat.zip && _password.text.isNotEmpty;
+    final usePassword = _encrypt && _canEncrypt && _password.text.isNotEmpty;
 
-    final handle = const DartArchiveEngine().create(CreateRequest(
+    var splitMb = _splitMb;
+    if (_split && _customSplit) splitMb = int.tryParse(_customController.text.trim()) ?? 0;
+    if (_split && splitMb < 1) {
+      ScaffoldMessenger.of(widget.parentContext)
+          .showSnackBar(SnackBar(content: Text(l10n.splitTooSmall)));
+      return;
+    }
+
+    final handle = appEngine.create(CreateRequest(
       sourcePaths: widget.sources,
       outputPath: output,
       format: _format,
       level: _level,
       password: usePassword ? _password.text : null,
+      splitSizeBytes: _split ? splitMb * 1024 * 1024 : 0,
       tempDir: storage.tempDir,
     ));
     navigator.pop();
@@ -86,14 +105,13 @@ class _CreateSheetState extends State<_CreateSheet> {
       doneTitle: l10n.createdTitle,
       doneBuilder: (ctx, path) => Text(l10n.createdSummary(path)),
     );
-    if (result != null) await appState.addToHistory(result);
+    if (result != null) await history.addToHistory(result);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final isPro = context.watch<AppState>().isPro;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
@@ -122,12 +140,13 @@ class _CreateSheetState extends State<_CreateSheet> {
                 showSelectedIcon: false,
                 segments: const [
                   ButtonSegment(value: CreateFormat.zip, label: Text('ZIP')),
+                  ButtonSegment(value: CreateFormat.sevenZip, label: Text('7Z')),
                   ButtonSegment(value: CreateFormat.tarGz, label: Text('TAR.GZ')),
                 ],
                 selected: {_format},
                 onSelectionChanged: (s) => setState(() {
                   _format = s.first;
-                  if (_format != CreateFormat.zip) _encrypt = false;
+                  if (!_canEncrypt) _encrypt = false;
                 }),
               ),
               const SizedBox(height: 16),
@@ -147,21 +166,10 @@ class _CreateSheetState extends State<_CreateSheet> {
               const SizedBox(height: 8),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Row(children: [
-                  Flexible(child: Text(l10n.passwordProtect)),
-                  if (!isPro) ...[const SizedBox(width: 8), _ProChip(label: l10n.proFeature)],
-                ]),
+                title: Text(l10n.passwordProtect),
                 subtitle: Text(l10n.passwordProtectSub),
                 value: _encrypt,
-                onChanged: _format != CreateFormat.zip
-                    ? null
-                    : (v) {
-                        if (!isPro) {
-                          showProSheet(context);
-                        } else {
-                          setState(() => _encrypt = v);
-                        }
-                      },
+                onChanged: _canEncrypt ? (v) => setState(() => _encrypt = v) : null,
               ),
               if (_encrypt)
                 TextField(
@@ -179,14 +187,44 @@ class _CreateSheetState extends State<_CreateSheet> {
                 ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Row(children: [
-                  Flexible(child: Text(l10n.splitArchive)),
-                  if (!isPro) ...[const SizedBox(width: 8), _ProChip(label: l10n.proFeature)],
-                ]),
+                title: Text(l10n.splitArchive),
                 subtitle: Text(l10n.splitArchiveSub),
-                value: false,
-                onChanged: null,
+                value: _split,
+                onChanged: (v) => setState(() => _split = v),
               ),
+              if (_split) ...[
+                Text(l10n.splitSize, style: theme.textTheme.labelLarge),
+                const SizedBox(height: 8),
+                Wrap(spacing: 8, children: [
+                  for (final mb in const [10, 25, 100])
+                    ChoiceChip(
+                      label: Text(l10n.splitSizeMb(mb)),
+                      selected: !_customSplit && _splitMb == mb,
+                      onSelected: (_) => setState(() {
+                        _customSplit = false;
+                        _splitMb = mb;
+                      }),
+                    ),
+                  ChoiceChip(
+                    label: Text(l10n.splitCustomMb),
+                    selected: _customSplit,
+                    onSelected: (_) => setState(() => _customSplit = true),
+                  ),
+                ]),
+                if (_customSplit) ...[
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _customController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: l10n.splitCustomMb,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 4),
+                Text(l10n.splitVolumesNote, style: theme.textTheme.bodySmall),
+              ],
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
@@ -201,21 +239,4 @@ class _CreateSheetState extends State<_CreateSheet> {
       ),
     );
   }
-}
-
-class _ProChip extends StatelessWidget {
-  const _ProChip({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF59E0B).withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Text(label,
-            style: const TextStyle(
-                fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFFB45309))),
-      );
 }

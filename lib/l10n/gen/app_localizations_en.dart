@@ -16,9 +16,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTagline => 'Extract anything. Offline. No fullscreen ads.';
 
   @override
-  String get proBadge => 'PRO';
-
-  @override
   String get settings => 'Settings';
 
   @override
@@ -70,13 +67,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createArchive => 'Create archive';
 
   @override
-  String get createArchiveSub => 'ZIP, TAR.GZ';
+  String get createArchiveSub => 'ZIP, 7Z, TAR.GZ';
 
   @override
   String get extractArchive => 'Extract archive';
 
   @override
-  String get extractArchiveSub => 'ZIP, TAR, GZ, BZ2, XZ';
+  String get extractArchiveSub => 'ZIP, RAR, 7Z, TAR, ISO…';
 
   @override
   String get encodingFixTitle => 'Encoding fix (broken text)';
@@ -194,7 +191,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unsupportedBody =>
-      'This build handles ZIP, TAR, GZ, BZ2 and XZ. RAR, 7Z, ISO and CAB need the native engine (libarchive + UnRAR), which is not bundled yet.';
+      'This format needs the 7-Zip engine, which is only available in the Android app.';
 
   @override
   String get corruptTitle => 'Couldn’t open this archive';
@@ -294,16 +291,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordProtect => 'Password lock (AES-256)';
 
   @override
-  String get passwordProtectSub => 'ZIP only';
+  String get passwordProtectSub => 'ZIP and 7Z';
 
   @override
   String get splitArchive => 'Split archive';
 
   @override
-  String get splitArchiveSub => 'Coming soon';
-
-  @override
-  String get proFeature => 'Pro';
+  String get splitArchiveSub => 'Cut into volumes (.001, .002, …)';
 
   @override
   String get createButton => 'Create';
@@ -331,35 +325,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickFiles => 'Pick files';
 
   @override
-  String get proTitle => 'ZipFast Pro';
+  String get splitSize => 'Volume size';
 
   @override
-  String get proIntro =>
-      'One-time purchase. Extraction of every format stays free.';
+  String splitSizeMb(int mb) {
+    return '$mb MB';
+  }
 
   @override
-  String get proFeatureAds => 'Remove all ads';
+  String get splitCustomMb => 'Custom size (MB)';
 
   @override
-  String get proFeatureAes => 'AES-256 encrypted archives';
+  String get splitTooSmall => 'Enter a size of at least 1 MB.';
 
   @override
-  String get proFeatureSplit => 'Split archives';
-
-  @override
-  String get proFeatureBatch => 'Batch extraction & password favorites';
-
-  @override
-  String get proUnavailable => 'Purchases aren’t available in this build yet.';
-
-  @override
-  String get proDebugUnlock => 'Unlock (debug build)';
-
-  @override
-  String get proDebugLock => 'Lock again (debug build)';
-
-  @override
-  String get proActive => 'Pro is active';
+  String get splitVolumesNote =>
+      'Volumes are named .001, .002, … Open the .001 file to extract.';
 
   @override
   String get settingsTitle => 'Settings';

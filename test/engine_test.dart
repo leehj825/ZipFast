@@ -95,7 +95,7 @@ void main() {
       Directory(p.join(srcDir, 'empty')).createSync();
     });
 
-    for (final format in CreateFormat.values) {
+    for (final format in const [CreateFormat.zip, CreateFormat.tarGz]) {
       test('${format.name} plain', () async {
         final archive = p.join(tmp.path, 'out.${format == CreateFormat.zip ? 'zip' : 'tar.gz'}');
         await engine

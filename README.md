@@ -25,6 +25,13 @@ Everything is free: there is no Pro tier, no purchase, and no feature gating.
 | "Open with ZipFast" | Android intent filters + `MainActivity` hand-off |
 | i18n | English + Korean (`lib/l10n/app_*.arb`) |
 
+## Startup safety
+
+`main()` opens the app immediately (`ZipFastBoot`, `lib/boot.dart`): a splash while settings, folders and
+ads consent load. If any startup step fails it shows an error screen with the exception and stack (with
+*Retry* and *Copy*) instead of a dead app, and every `path_provider` lookup has a fallback. Uncaught async
+errors are logged (`adb logcat | grep ZipFast`).
+
 ## Two engines
 
 | Engine | Formats | Where it runs |

@@ -48,20 +48,34 @@ class StorageService {
     return StorageService._(dir, dir, dir);
   }
 
+  /// Finds the app's folders. Every lookup has a fallback, so a failing
+  /// `path_provider` (it talks to Android through JNI) can never keep the app
+  /// from starting: the cache folder is then the process temp directory (the
+  /// Flutter engine points it at the app cache) and the files folder its sibling.
   static Future<StorageService> create() async {
-    final cache = await getTemporaryDirectory();
+    String cachePath;
+    try {
+      cachePath = (await getTemporaryDirectory()).path;
+    } catch (_) {
+      cachePath = Directory.systemTemp.path;
+    }
+    final cache = Directory(cachePath);
     final temp = Directory(p.join(cache.path, 'zipfast'));
     try {
       if (temp.existsSync()) temp.deleteSync(recursive: true);
     } catch (_) {}
     temp.createSync(recursive: true);
-    Directory files;
+    String filesPath;
     try {
-      files = await getExternalStorageDirectory() ??
-          await getApplicationDocumentsDirectory();
+      filesPath = (await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory()).path;
     } catch (_) {
-      files = await getApplicationDocumentsDirectory();
+      try {
+        filesPath = (await getApplicationDocumentsDirectory()).path;
+      } catch (_) {
+        filesPath = p.join(cache.parent.path, 'files');
+      }
     }
+    final files = Directory(filesPath)..createSync(recursive: true);
     final service = StorageService._(temp.path, files.path, cache.path);
     for (final dir in [service.fallbackExtractRoot, service.createRoot]) {
       try {

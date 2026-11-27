@@ -75,7 +75,13 @@ class StorageService {
         filesPath = p.join(cache.parent.path, 'files');
       }
     }
-    final files = Directory(filesPath)..createSync(recursive: true);
+    Directory files = Directory(filesPath);
+    try {
+      files.createSync(recursive: true);
+    } catch (_) {
+      // Last resort: a folder inside the cache, which is known to be writable.
+      files = Directory(p.join(cache.path, 'zipfast_files'))..createSync(recursive: true);
+    }
     final service = StorageService._(temp.path, files.path, cache.path);
     for (final dir in [service.fallbackExtractRoot, service.createRoot]) {
       try {

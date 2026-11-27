@@ -37,6 +37,11 @@ android {
 
     buildTypes {
         release {
+            // R8 is on for release builds; these rules keep the JNI-visible 7-Zip classes.
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")

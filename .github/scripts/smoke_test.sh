@@ -47,7 +47,11 @@ if [ "$FAIL" -ne 0 ]; then
   exit 1
 fi
 # The crash report screen must itself work (it only shows after a crash, so check it by hand).
-adb shell am start -n "$PKG/.CrashActivity" --es zipfast.crash_report "CI check of the crash report screen" >/dev/null
+# The screen is not exported (other apps must not open it), so start it as root (google_apis
+# emulator images allow `adb root`).
+adb root >/dev/null 2>&1; sleep 3; adb wait-for-device
+adb shell am start -n "$PKG/.CrashActivity" --es zipfast.crash_report CI_check_of_the_crash_report_screen \
+  || echo "::warning::could not start CrashActivity"
 sleep 5
 adb shell dumpsys activity activities > "$OUT/activities_crash.txt" 2>/dev/null
 adb exec-out screencap -p > "$OUT/crash_screen.png" 2>/dev/null

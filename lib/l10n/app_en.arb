@@ -1,0 +1,223 @@
+{
+  "@@locale": "en",
+  "appName": "ZipFast",
+  "appTagline": "Extract anything. Offline. No fullscreen ads.",
+  "proBadge": "PRO",
+  "settings": "Settings",
+  "search": "Search",
+  "searchHint": "Search archives",
+  "cancel": "Cancel",
+  "ok": "OK",
+  "close": "Close",
+  "done": "Done",
+  "retry": "Retry",
+  "delete": "Delete",
+  "tabRecent": "Recent archives",
+  "tabBrowse": "Browse device",
+  "recentArchivesTitle": "Recent archives ({count})",
+  "@recentArchivesTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRecentTitle": "No archives yet",
+  "noRecentBody": "Tap “Open archive” to pick a file, or open an archive from any app with “Open with ZipFast”.",
+  "openArchive": "Open archive",
+  "createArchive": "Create archive",
+  "createArchiveSub": "ZIP, TAR.GZ",
+  "extractArchive": "Extract archive",
+  "extractArchiveSub": "ZIP, TAR, GZ, BZ2, XZ",
+  "encodingFixTitle": "Encoding fix (broken text)",
+  "encodingFixSub": "Repairs Korean, Japanese & Chinese file names",
+  "aesSupported": "AES-256 encryption supported",
+  "splitBadge": "split archive",
+  "adBannerPlaceholder": "Ad banner space",
+  "modifiedOn": "Modified {date}",
+  "@modifiedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "browseNoAccessTitle": "Can’t list this folder",
+  "browseNoAccessBody": "Android restricts file access for apps. Use “Open archive” to pick files with the system picker.",
+  "browseEmpty": "This folder is empty",
+  "compressSelected": "Compress {count} selected",
+  "@compressSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "upOneLevel": "Up one level",
+  "viewerSubtitle": "{files} files · {size} unpacked",
+  "@viewerSubtitle": {
+    "placeholders": {
+      "files": {
+        "type": "int"
+      },
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "encodingLabel": "Encoding",
+  "encodingAuto": "Auto (UTF-8)",
+  "encodingCp949": "CP949 (Korean)",
+  "encodingShiftJis": "Shift-JIS (Japanese)",
+  "encodingGbk": "GBK (Chinese)",
+  "encodingBannerTitle": "File names look garbled",
+  "encodingBannerAction": "Fix",
+  "extractAll": "Extract all",
+  "extractSelected": "Extract {count} selected",
+  "@extractSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "folderEmpty": "This folder is empty",
+  "selectAll": "Select all",
+  "clearSelection": "Clear selection",
+  "previewUnavailable": "No preview for this file type. Select it and extract instead.",
+  "previewTooLarge": "This file is too large to preview.",
+  "previewFailed": "Couldn’t preview this file.",
+  "passwordTitle": "Password required",
+  "passwordWrong": "Wrong password. Try again.",
+  "passwordHint": "Password",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "unlock": "Unlock",
+  "unsupportedTitle": "{format} isn’t supported in this build",
+  "@unsupportedTitle": {
+    "placeholders": {
+      "format": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedBody": "This build handles ZIP, TAR, GZ, BZ2 and XZ. RAR, 7Z, ISO and CAB need the native engine (libarchive + UnRAR), which is not bundled yet.",
+  "corruptTitle": "Couldn’t open this archive",
+  "encryptedBadge": "Encrypted",
+  "extractTitle": "Extract",
+  "destination": "Destination",
+  "destNewFolder": "New folder (recommended)",
+  "destSameFolder": "Same folder as the archive",
+  "destCustom": "Choose folder…",
+  "destFallbackNote": "The archive’s folder isn’t writable, so files go to ZipFast’s storage instead.",
+  "ifFileExists": "If a file already exists",
+  "conflictSkip": "Skip",
+  "conflictOverwrite": "Overwrite",
+  "conflictRename": "Rename automatically",
+  "extractButton": "Extract",
+  "extracting": "Extracting…",
+  "extractDoneTitle": "Extraction complete",
+  "extractedSummary": "{count} files extracted to\n{path}",
+  "@extractedSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "blockedWarning": "{count} unsafe entries were blocked (path traversal).",
+  "@blockedWarning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "skippedNote": "{count} entries skipped.",
+  "@skippedNote": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cancelled": "Cancelled",
+  "copyPath": "Copy path",
+  "pathCopied": "Path copied",
+  "createTitle": "Create archive",
+  "archiveName": "Archive name",
+  "format": "Format",
+  "compression": "Compression",
+  "levelStore": "Store",
+  "levelFast": "Fast",
+  "levelNormal": "Normal",
+  "levelMaximum": "Maximum",
+  "passwordProtect": "Password lock (AES-256)",
+  "passwordProtectSub": "ZIP only",
+  "splitArchive": "Split archive",
+  "splitArchiveSub": "Coming soon",
+  "proFeature": "Pro",
+  "createButton": "Create",
+  "creating": "Creating archive…",
+  "createdTitle": "Archive created",
+  "createdSummary": "Saved to\n{path}",
+  "@createdSummary": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "noFilesSelected": "No files selected",
+  "filesSelected": "{count} items selected",
+  "@filesSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pickFiles": "Pick files",
+  "proTitle": "ZipFast Pro",
+  "proIntro": "One-time purchase. Extraction of every format stays free.",
+  "proFeatureAds": "Remove all ads",
+  "proFeatureAes": "AES-256 encrypted archives",
+  "proFeatureSplit": "Split archives",
+  "proFeatureBatch": "Batch extraction & password favorites",
+  "proUnavailable": "Purchases aren’t available in this build yet.",
+  "proDebugUnlock": "Unlock (debug build)",
+  "proDebugLock": "Lock again (debug build)",
+  "proActive": "Pro is active",
+  "settingsTitle": "Settings",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "language": "Language",
+  "languageSystem": "System default",
+  "defaultConflict": "Default for existing files",
+  "clearCache": "Clear preview cache",
+  "cacheCleared": "Cache cleared",
+  "licenses": "Open-source licenses",
+  "about": "About",
+  "privacy": "100% offline. Your files never leave this device.",
+  "version": "Version {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "genericError": "Something went wrong: {message}",
+  "@genericError": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  }
+}

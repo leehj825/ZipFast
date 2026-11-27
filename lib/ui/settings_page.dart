@@ -1,0 +1,118 @@
+import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
+
+import '../engine/models.dart';
+import '../l10n/gen/app_localizations.dart';
+import '../state/app_state.dart';
+import '../state/storage_service.dart';
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final state = context.watch<AppState>();
+
+    String themeLabel(ThemeMode m) => switch (m) {
+          ThemeMode.system => l10n.themeSystem,
+          ThemeMode.light => l10n.themeLight,
+          ThemeMode.dark => l10n.themeDark,
+        };
+    String conflictLabel(ConflictPolicy c) => switch (c) {
+          ConflictPolicy.skip => l10n.conflictSkip,
+          ConflictPolicy.overwrite => l10n.conflictOverwrite,
+          ConflictPolicy.rename => l10n.conflictRename,
+        };
+    String languageLabel(String? code) => switch (code) {
+          'en' => 'English',
+          'ko' => '한국어',
+          _ => l10n.languageSystem,
+        };
+
+    Future<T?> pick<T>(String title, List<T> values, T current, String Function(T) label) {
+      return showModalBottomSheet<T>(
+        context: context,
+        builder: (ctx) => SafeArea(
+          child: RadioGroup<T>(
+            groupValue: current,
+            onChanged: (x) => Navigator.pop(ctx, x),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(title, style: Theme.of(ctx).textTheme.titleMedium),
+              ),
+              for (final v in values) RadioListTile<T>(value: v, title: Text(label(v))),
+            ]),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      body: ListView(children: [
+        ListTile(
+          leading: const Icon(Icons.palette_outlined),
+          title: Text(l10n.theme),
+          subtitle: Text(themeLabel(state.themeMode)),
+          onTap: () async {
+            final m = await pick<ThemeMode>(
+                l10n.theme, ThemeMode.values, state.themeMode, themeLabel);
+            if (m != null) state.setThemeMode(m);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.language),
+          title: Text(l10n.language),
+          subtitle: Text(languageLabel(state.localeCode)),
+          onTap: () async {
+            // `''` stands for "system default" because null means "dismissed".
+            final c = await pick<String>(
+              l10n.language,
+              const ['', 'en', 'ko'],
+              state.localeCode ?? '',
+              (v) => languageLabel(v.isEmpty ? null : v),
+            );
+            if (c != null) state.setLocaleCode(c.isEmpty ? null : c);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.file_copy_outlined),
+          title: Text(l10n.defaultConflict),
+          subtitle: Text(conflictLabel(state.defaultConflict)),
+          onTap: () async {
+            final c = await pick<ConflictPolicy>(l10n.defaultConflict, ConflictPolicy.values,
+                state.defaultConflict, conflictLabel);
+            if (c != null) state.setDefaultConflict(c);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.cleaning_services_outlined),
+          title: Text(l10n.clearCache),
+          onTap: () {
+            context.read<StorageService>().clearTemp();
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(l10n.cacheCleared)));
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.description_outlined),
+          title: Text(l10n.licenses),
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: l10n.appName,
+            applicationVersion: '0.1.0',
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.lock_outline),
+          title: Text(l10n.about),
+          subtitle: Text('${l10n.version('0.1.0')}\n${l10n.privacy}'),
+          isThreeLine: true,
+        ),
+      ]),
+    );
+  }
+}

@@ -67,6 +67,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+          # Reuse downloaded Gradle/Maven artifacts between runs: far fewer requests to
+          # Maven Central, which rate-limits (HTTP 429) shared CI runners.
+          cache: gradle
 
       - uses: subosito/flutter-action@v2
         with:
@@ -98,10 +101,20 @@ jobs:
       # Leave it out for a Play Store build.
       - name: Build APKs (per ABI + universal)
         run: |
-          flutter build apk --release --split-per-abi \
+          # Maven Central sometimes answers 429 / 5xx to shared runners. Retry with a
+          # growing pause (this only helps with download errors; real build errors fail 3x fast).
+          retry() {
+            for attempt in 1 2 3; do
+              "$@" && return 0
+              echo "::warning::attempt $attempt failed: $*"
+              [ "$attempt" -lt 3 ] && sleep $((attempt * 45))
+            done
+            return 1
+          }
+          retry flutter build apk --release --split-per-abi \
             --dart-define=ZIPFAST_TEST_ADS=true \
             --build-number="${GITHUB_RUN_NUMBER}"
-          flutter build apk --release \
+          retry flutter build apk --release \
             --dart-define=ZIPFAST_TEST_ADS=true \
             --build-number="${GITHUB_RUN_NUMBER}"
 

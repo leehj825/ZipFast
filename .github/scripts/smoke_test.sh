@@ -58,4 +58,20 @@ adb exec-out screencap -p > "$OUT/crash_screen.png" 2>/dev/null
 if ! grep -E "mResumedActivity|topResumedActivity" "$OUT/activities_crash.txt" | grep -q "CrashActivity"; then
   echo "::error::The crash report screen did not open"; exit 1
 fi
-echo "Smoke test passed: the app runs and shows its main screen, and the crash report screen opens."
+# End to end: make the running app die with an uncaught exception (`am crash`) and check that
+# the crash handler opens the report screen.
+adb shell am force-stop "$PKG"; sleep 2
+adb logcat -c
+adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null
+sleep 12
+adb shell am crash "$PKG"
+sleep 10
+adb logcat -d > "$OUT/logcat_crash_drill.txt"
+adb shell dumpsys activity activities > "$OUT/activities_drill.txt" 2>/dev/null
+adb exec-out screencap -p > "$OUT/crash_drill.png" 2>/dev/null
+if ! grep -E "mResumedActivity|topResumedActivity" "$OUT/activities_drill.txt" | grep -q "CrashActivity"; then
+  echo "::error::After an uncaught exception the crash report screen was NOT shown"
+  grep -E "AndroidRuntime|CrashActivity|$PKG" "$OUT/logcat_crash_drill.txt" | tail -40
+  exit 1
+fi
+echo "Smoke test passed: the app runs and shows its main screen, and a crash opens the crash report screen."

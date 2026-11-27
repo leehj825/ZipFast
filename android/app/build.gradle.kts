@@ -29,6 +29,12 @@ android {
         versionName = flutter.versionName
     }
 
+    // Lint's release-time check crashes on some toolchains and adds nothing to a
+    // prerelease build. Run `./gradlew lint` by hand if you want the report.
+    lint {
+        checkReleaseBuilds = false
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

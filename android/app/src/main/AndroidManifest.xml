@@ -15,7 +15,7 @@
 
     <application
         android:label="@string/app_name"
-        android:name="${applicationName}"
+        android:name=".ZipFastApplication"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
@@ -77,6 +77,13 @@
                 <data android:pathPattern=".*\\.cab" />
             </intent-filter>
         </activity>
+        <!-- Plain-Android crash report screen, in its own process so it survives a dying app. -->
+        <activity
+            android:name=".CrashActivity"
+            android:exported="false"
+            android:process=":crash"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.DeviceDefault.Light" />
         <!-- AdMob app ID (ZipFast). Required: the app crashes at start without it. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

@@ -134,10 +134,16 @@ jobs:
           if-no-files-found: error
 
   smoke:
-    name: Launch on emulator
+    name: Launch on emulator (Android ${{ matrix.api }})
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        # Different Android versions behave differently at start-up (providers, permissions,
+        # 16 KB pages, edge-to-edge); all must launch before a build is published.
+        api: [28, 31, 34, 35]
     steps:
       - uses: actions/checkout@v4
 
@@ -158,7 +164,7 @@ jobs:
       - name: Run the app on an emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 34
+          api-level: ${{ matrix.api }}
           arch: x86_64
           target: google_apis
           profile: pixel_6
@@ -170,7 +176,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-logs
+          name: smoke-logs-api${{ matrix.api }}
           path: smoke/*
           if-no-files-found: ignore
 
@@ -194,7 +200,7 @@ jobs:
           **Prerelease** build of ZipFast ${{ needs.build.outputs.version }} (CI run #${GITHUB_RUN_NUMBER}, commit ${GITHUB_SHA::7}).
 
           - Install \`ZipFast-${TAG}-universal.apk\` (one APK for all devices).
-          - Launched successfully on an Android 14 emulator before publishing.
+          - Launched successfully on Android 9, 12, 14 and 15 emulators before publishing.
           - Signed with the debug key: for testing only, not for the Play Store.
           - Checksums: \`SHA256SUMS.txt\`.
           NOTE

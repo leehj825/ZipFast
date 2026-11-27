@@ -1,0 +1,140 @@
+name: Prerelease
+
+# Builds the Android APKs and publishes them as a GitHub *prerelease*.
+#  - Run manually: Actions -> Prerelease -> Run workflow
+#  - Or push a tag such as v0.1.0-pre.1
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (default: v<pubspec version>-pre.<run number>)'
+        required: false
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prerelease-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: '3.50.1'
+
+jobs:
+  verify:
+    name: Analyze & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test --reporter expanded
+
+      # 7-Zip bridge (RAR/7Z/ISO/CAB, passwords, split volumes) on a plain JVM.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install py7zr pycdlib
+      - run: android/engine-test/run_tests.sh
+
+  build:
+    name: Build APKs & publish prerelease
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Work out version and tag
+        id: meta
+        run: |
+          VERSION=$(grep -E '^version:' pubspec.yaml | head -1 | sed -E 's/version:[[:space:]]*//; s/\+.*//')
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          elif [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="v${VERSION}-pre.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Building $TAG (pubspec $VERSION)"
+
+      - run: flutter pub get
+
+      # Release build signed with the debug key: fine for testing a prerelease,
+      # NOT for Google Play. Add a real keystore before publishing to the store.
+      - name: Build APKs (per ABI + universal)
+        run: |
+          flutter build apk --release --split-per-abi \
+            --build-number="${GITHUB_RUN_NUMBER}"
+          flutter build apk --release \
+            --build-number="${GITHUB_RUN_NUMBER}"
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p dist
+          TAG="${{ steps.meta.outputs.tag }}"
+          for f in build/app/outputs/flutter-apk/app-*-release.apk; do
+            abi=$(basename "$f" | sed -E 's/app-(.*)-release\.apk/\1/')
+            cp "$f" "dist/ZipFast-${TAG}-${abi}.apk"
+          done
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/ZipFast-${TAG}-universal.apk"
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+          ls -la dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zipfast-apks
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Publish GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          NOTES=$(cat <<NOTE
+          **Prerelease** build of ZipFast ${{ steps.meta.outputs.version }} (CI run #${GITHUB_RUN_NUMBER}, commit ${GITHUB_SHA::7}).
+
+          - Install \`ZipFast-${TAG}-universal.apk\` on any device, or pick the smaller per-ABI APK
+            (\`arm64-v8a\` for most modern phones).
+          - Signed with the debug key: for testing only, not for the Play Store.
+          - Checksums: \`SHA256SUMS.txt\`.
+          NOTE
+          )
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --prerelease --notes "$NOTES"
+          else
+            gh release create "$TAG" dist/* \
+              --prerelease \
+              --target "${GITHUB_SHA}" \
+              --title "ZipFast ${TAG}" \
+              --notes "$NOTES"
+          fi

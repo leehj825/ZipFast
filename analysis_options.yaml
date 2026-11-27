@@ -1,0 +1,8 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - lib/l10n/gen/**
+    - lib/encoding/legacy_tables.g.dart

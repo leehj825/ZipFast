@@ -265,6 +265,8 @@
   "exportUnavailable": "Saving to another folder isn’t available here.",
   "exportAccessLost": "Access to that folder was removed. Choose it again.",
   "exportNothing": "Nothing to copy.",
+  "adPrivacy": "Ad privacy settings",
+  "adPrivacySub": "Review or change your ad consent choices",
   "settingsTitle": "Settings",
   "theme": "Theme",
   "themeSystem": "System",
@@ -277,7 +279,7 @@
   "cacheCleared": "Cache cleared",
   "licenses": "Open-source licenses",
   "about": "About",
-  "privacy": "100% offline. Your files never leave this device.",
+  "privacy": "Archives are processed offline; your files never leave this device. Only the ad banner uses the internet.",
   "version": "Version {version}",
   "@version": {
     "placeholders": {

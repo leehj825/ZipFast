@@ -53,8 +53,23 @@ which the product promises; 7-Zip does both, and also reads RAR5 and creates 7Z.
   fixtures, so tests use hand-built stored RAR4/RAR5 files.
 * Filename-encoding repair only exists for ZIP (7Z names are Unicode; RAR names are rarely mis-encoded).
 * Foreground service / notification progress for long jobs; PDF preview; batch extraction.
-* Ads: `AdBannerSlot` is where an AdMob banner goes; it shows a placeholder in debug builds and nothing
-  in release.
+* Ads: see **Ads** below (Android code unverified, like the rest).
+
+## Ads (AdMob banner)
+
+* Google Mobile Ads SDK (`google_mobile_ads`), one **anchored adaptive banner** at the bottom of the home
+  screen only; never over dialogs, progress or archive work, and the FAB floats above it.
+  App ID `ca-app-pub-4400173019354346~7131341860` (manifest meta-data, required or the app crashes at
+  start); banner unit `ca-app-pub-4400173019354346/9123080380` (`lib/services/ads_service.dart`).
+* **Consent first:** the Google UMP consent form runs before the SDK initializes; no ad request is made
+  until consent allows it. Where Google requires it, Settings shows **Ad privacy settings** to change the
+  choice. A failed load or no consent means the banner takes no space.
+* **Test ads outside the store:** debug builds and any build with `--dart-define=ZIPFAST_TEST_ADS=true`
+  (the GitHub prerelease workflow) use Google's test unit. Clicking your own live ads can get an AdMob
+  account banned. A Play build is made without that define so it uses the live unit.
+* Before a Play release: declare ads and the advertising ID in **Data safety**, answer the *Ads* and
+  *Target audience* (not child-directed) forms, and host `app-ads.txt` on the developer website. The
+  plugin adds the `AD_ID` permission. The INTERNET permission exists only for ads; archives never use it.
 
 ## Where files live, and getting them out
 

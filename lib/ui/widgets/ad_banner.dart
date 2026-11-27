@@ -1,35 +1,114 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../l10n/gen/app_localizations.dart';
+import '../../services/ads_service.dart';
 
-/// Home-screen banner slot.
+/// The home-screen banner: an anchored adaptive AdMob banner at the bottom.
 ///
-/// This is the single integration point for an adaptive AdMob banner
-/// (`google_mobile_ads`). Until that is wired in, debug builds show a labelled
-/// placeholder so the layout can be checked, and release builds show nothing.
-///  Keep at least 16dp of clearance above it.
+/// Placement follows AdMob policy: it sits in the scaffold's bottom bar, so it
+/// never overlaps content or buttons (the FAB floats above it), and it is only
+/// used on the home screen, never over dialogs, progress or while archives are
+/// being worked on. Until consent allows ad requests, and whenever an ad fails
+/// to load, it takes no space at all.
 class AdBannerSlot extends StatelessWidget {
   const AdBannerSlot({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (!kDebugMode) return const SizedBox.shrink();
-    final scheme = Theme.of(context).colorScheme;
+    if (!AdsService.isSupported()) return const SizedBox.shrink();
+    return ValueListenableBuilder<bool>(
+      valueListenable: AdsService.instance.ready,
+      builder: (context, ready, _) => ready ? const _Banner() : const SizedBox.shrink(),
+    );
+  }
+}
+
+class _Banner extends StatefulWidget {
+  const _Banner();
+
+  @override
+  State<_Banner> createState() => _BannerState();
+}
+
+class _BannerState extends State<_Banner> {
+  BannerAd? _ad;
+  AnchoredAdaptiveBannerAdSize? _size;
+  int? _requestedWidth;
+  int _retries = 0;
+  Timer? _retryTimer;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload when the available width changes (rotation, split screen).
+    final width = MediaQuery.sizeOf(context).width.truncate();
+    if (width != _requestedWidth) _load(width);
+  }
+
+  Future<void> _load(int width) async {
+    _requestedWidth = width;
+    _retryTimer?.cancel();
+    // ignore: deprecated_member_use
+    final size = await AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait, width);
+    if (!mounted || size == null || width != _requestedWidth) return;
+    final old = _ad;
+    final ad = BannerAd(
+      adUnitId: AdUnits.banner(debug: kDebugMode),
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (loaded) {
+          if (!mounted) {
+            loaded.dispose();
+            return;
+          }
+          setState(() => _size = size);
+        },
+        onAdFailedToLoad: (failed, error) {
+          failed.dispose();
+          if (!mounted) return;
+          setState(() {
+            if (_ad == failed) _ad = null;
+            _size = null;
+          });
+          // A few quiet retries (no network, no fill); then give up until the next launch.
+          if (_retries++ < 3) {
+            _retryTimer = Timer(const Duration(seconds: 60), () {
+              if (mounted) _load(_requestedWidth ?? width);
+            });
+          }
+        },
+      ),
+    );
+    setState(() {
+      _ad = ad;
+      _size = null; // hidden until it has loaded
+    });
+    old?.dispose();
+    await ad.load();
+  }
+
+  @override
+  void dispose() {
+    _retryTimer?.cancel();
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ad = _ad;
+    final size = _size;
+    if (ad == null || size == null) return const SizedBox.shrink();
     return SafeArea(
       top: false,
-      child: Container(
-        height: 56,
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          AppLocalizations.of(context).adBannerPlaceholder,
-          style: TextStyle(color: scheme.onSurfaceVariant),
-        ),
+      child: SizedBox(
+        width: size.width.toDouble(),
+        height: size.height.toDouble(),
+        child: AdWidget(ad: ad),
       ),
     );
   }

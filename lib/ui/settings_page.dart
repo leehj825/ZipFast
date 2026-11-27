@@ -5,6 +5,7 @@ import '../engine/models.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
+import '../services/ads_service.dart';
 import 'actions.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -137,6 +138,17 @@ class SettingsPage extends StatelessWidget {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(l10n.cacheCleared)));
           },
+        ),
+        ValueListenableBuilder<bool>(
+          valueListenable: AdsService.instance.privacyOptionsRequired,
+          builder: (context, required, _) => required
+              ? ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: Text(l10n.adPrivacy),
+                  subtitle: Text(l10n.adPrivacySub),
+                  onTap: AdsService.instance.showPrivacyOptions,
+                )
+              : const SizedBox.shrink(),
         ),
         const Divider(),
         ListTile(

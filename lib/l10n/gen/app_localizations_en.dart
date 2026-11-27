@@ -485,6 +485,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportNothing => 'Nothing to copy.';
 
   @override
+  String get adPrivacy => 'Ad privacy settings';
+
+  @override
+  String get adPrivacySub => 'Review or change your ad consent choices';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
@@ -521,7 +527,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about => 'About';
 
   @override
-  String get privacy => '100% offline. Your files never leave this device.';
+  String get privacy =>
+      'Archives are processed offline; your files never leave this device. Only the ad banner uses the internet.';
 
   @override
   String version(String version) {

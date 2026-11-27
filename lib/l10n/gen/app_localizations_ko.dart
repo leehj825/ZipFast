@@ -477,6 +477,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get exportNothing => '복사할 항목이 없습니다.';
 
   @override
+  String get adPrivacy => '광고 개인정보 설정';
+
+  @override
+  String get adPrivacySub => '광고 동의 선택을 확인하거나 변경합니다';
+
+  @override
   String get settingsTitle => '설정';
 
   @override
@@ -513,7 +519,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get about => '정보';
 
   @override
-  String get privacy => '100% 오프라인입니다. 파일은 기기 밖으로 전송되지 않습니다.';
+  String get privacy =>
+      '압축 처리는 오프라인으로 이루어지며 파일은 기기 밖으로 전송되지 않습니다. 광고 배너만 인터넷을 사용합니다.';
 
   @override
   String version(String version) {

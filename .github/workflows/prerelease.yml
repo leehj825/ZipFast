@@ -93,11 +93,16 @@ jobs:
 
       # Release build signed with the debug key: fine for testing a prerelease,
       # NOT for Google Play. Add a real keystore before publishing to the store.
+      # ZIPFAST_TEST_ADS: prerelease APKs show Google's test ads, never live ones
+      # (AdMob policy: don't click or generate impressions on your own live ads).
+      # Leave it out for a Play Store build.
       - name: Build APKs (per ABI + universal)
         run: |
           flutter build apk --release --split-per-abi \
+            --dart-define=ZIPFAST_TEST_ADS=true \
             --build-number="${GITHUB_RUN_NUMBER}"
           flutter build apk --release \
+            --dart-define=ZIPFAST_TEST_ADS=true \
             --build-number="${GITHUB_RUN_NUMBER}"
 
       - name: Collect artifacts

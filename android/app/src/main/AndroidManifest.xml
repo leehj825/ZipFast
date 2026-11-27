@@ -9,6 +9,10 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
+    <!-- Needed only by the ad banner; archives are processed offline. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"
@@ -73,6 +77,10 @@
                 <data android:pathPattern=".*\\.cab" />
             </intent-filter>
         </activity>
+        <!-- AdMob app ID (ZipFast). Required: the app crashes at start without it. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4400173019354346~7131341860" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

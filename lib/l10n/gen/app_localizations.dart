@@ -962,6 +962,18 @@ abstract class AppLocalizations {
   /// **'Nothing to copy.'**
   String get exportNothing;
 
+  /// No description provided for @adPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad privacy settings'**
+  String get adPrivacy;
+
+  /// No description provided for @adPrivacySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Review or change your ad consent choices'**
+  String get adPrivacySub;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -1037,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacy.
   ///
   /// In en, this message translates to:
-  /// **'100% offline. Your files never leave this device.'**
+  /// **'Archives are processed offline; your files never leave this device. Only the ad banner uses the internet.'**
   String get privacy;
 
   /// No description provided for @version.

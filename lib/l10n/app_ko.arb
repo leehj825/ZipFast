@@ -144,6 +144,8 @@
   "exportUnavailable": "이 환경에서는 다른 폴더에 저장할 수 없습니다.",
   "exportAccessLost": "해당 폴더에 대한 접근이 해제되었습니다. 다시 선택하세요.",
   "exportNothing": "복사할 항목이 없습니다.",
+  "adPrivacy": "광고 개인정보 설정",
+  "adPrivacySub": "광고 동의 선택을 확인하거나 변경합니다",
   "settingsTitle": "설정",
   "theme": "테마",
   "themeSystem": "시스템",
@@ -156,7 +158,7 @@
   "cacheCleared": "캐시를 삭제했습니다",
   "licenses": "오픈소스 라이선스",
   "about": "정보",
-  "privacy": "100% 오프라인입니다. 파일은 기기 밖으로 전송되지 않습니다.",
+  "privacy": "압축 처리는 오프라인으로 이루어지며 파일은 기기 밖으로 전송되지 않습니다. 광고 배너만 인터넷을 사용합니다.",
   "version": "버전 {version}",
   "genericError": "문제가 발생했습니다: {message}"
 }

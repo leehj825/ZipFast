@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'services/ads_service.dart';
 import 'state/app_state.dart';
 import 'state/storage_service.dart';
 
@@ -23,6 +26,8 @@ archives or to develop a RAR-compatible compressor. ZipFast never creates RAR fi
   });
   final prefs = await SharedPreferences.getInstance();
   final storage = await StorageService.create();
+  // Consent first, then the Mobile Ads SDK; the UI does not wait for it.
+  unawaited(AdsService.instance.initialize());
   runApp(
     MultiProvider(
       providers: [

@@ -1,6 +1,6 @@
 name: Prerelease
 
-# Builds the Android APKs and publishes them as a GitHub *prerelease*.
+# Builds the universal Android APK and publishes it as a GitHub *prerelease*.
 #  - Every push to ANY branch builds and publishes a prerelease
 #    (tag: v<pubspec version>-pre.<run number>)
 #  - Pushing a tag such as v0.1.0-pre.1 uses that tag instead
@@ -57,7 +57,7 @@ jobs:
       - run: android/engine-test/run_tests.sh
 
   build:
-    name: Build APKs & publish prerelease
+    name: Build APK & publish prerelease
     needs: verify
     runs-on: ubuntu-latest
     steps:
@@ -99,7 +99,7 @@ jobs:
       # ZIPFAST_TEST_ADS: prerelease APKs show Google's test ads, never live ones
       # (AdMob policy: don't click or generate impressions on your own live ads).
       # Leave it out for a Play Store build.
-      - name: Build APKs (per ABI + universal)
+      - name: Build universal APK
         run: |
           # Maven Central sometimes answers 429 / 5xx to shared runners. Retry with a
           # growing pause (this only helps with download errors; real build errors fail 3x fast).
@@ -111,9 +111,6 @@ jobs:
             done
             return 1
           }
-          retry flutter build apk --release --split-per-abi \
-            --dart-define=ZIPFAST_TEST_ADS=true \
-            --build-number="${GITHUB_RUN_NUMBER}"
           retry flutter build apk --release \
             --dart-define=ZIPFAST_TEST_ADS=true \
             --build-number="${GITHUB_RUN_NUMBER}"
@@ -122,17 +119,13 @@ jobs:
         run: |
           mkdir -p dist
           TAG="${{ steps.meta.outputs.tag }}"
-          for f in build/app/outputs/flutter-apk/app-*-release.apk; do
-            abi=$(basename "$f" | sed -E 's/app-(.*)-release\.apk/\1/')
-            cp "$f" "dist/ZipFast-${TAG}-${abi}.apk"
-          done
           cp build/app/outputs/flutter-apk/app-release.apk "dist/ZipFast-${TAG}-universal.apk"
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
           ls -la dist
 
       - uses: actions/upload-artifact@v4
         with:
-          name: zipfast-apks
+          name: zipfast-apk
           path: dist/*
           if-no-files-found: error
 
@@ -144,8 +137,7 @@ jobs:
           NOTES=$(cat <<NOTE
           **Prerelease** build of ZipFast ${{ steps.meta.outputs.version }} (CI run #${GITHUB_RUN_NUMBER}, commit ${GITHUB_SHA::7}).
 
-          - Install \`ZipFast-${TAG}-universal.apk\` on any device, or pick the smaller per-ABI APK
-            (\`arm64-v8a\` for most modern phones).
+          - Install \`ZipFast-${TAG}-universal.apk\` (one APK for all devices).
           - Signed with the debug key: for testing only, not for the Play Store.
           - Checksums: \`SHA256SUMS.txt\`.
           NOTE

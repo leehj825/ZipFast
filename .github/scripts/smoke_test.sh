@@ -64,7 +64,11 @@ adb shell am force-stop "$PKG"; sleep 2
 adb logcat -c
 adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null
 sleep 12
-adb shell am crash "$PKG"
+# Target the main process by PID: `am crash <package>` may pick a helper process of the
+# package (the ads' WebView sandbox), which would not exercise the app's own handler.
+MAIN_PID=$(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}')
+echo "Crashing the main process (pid $MAIN_PID)"
+adb shell am crash "$MAIN_PID"
 sleep 10
 adb logcat -d > "$OUT/logcat_crash_drill.txt"
 adb shell dumpsys activity activities > "$OUT/activities_drill.txt" 2>/dev/null

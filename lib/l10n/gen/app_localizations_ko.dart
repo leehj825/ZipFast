@@ -339,6 +339,58 @@ class AppLocalizationsKo extends AppLocalizations {
   String get splitVolumesNote => '볼륨 이름은 .001, .002, … 입니다. 풀 때는 .001 파일을 여세요.';
 
   @override
+  String get extractLocation => '기본 압축 해제 폴더';
+
+  @override
+  String get extractLocationNextTo => '압축 파일 옆의 새 폴더';
+
+  @override
+  String get saveLocation => '새 압축 파일 기본 저장 폴더';
+
+  @override
+  String get saveLocationApp => 'ZipFast 저장소';
+
+  @override
+  String get chooseFolder => '폴더 선택…';
+
+  @override
+  String get resetToDefault => '기본값으로 되돌리기';
+
+  @override
+  String get change => '변경';
+
+  @override
+  String get saveTo => '저장 위치';
+
+  @override
+  String get createSubfolder => '새 폴더에 넣기';
+
+  @override
+  String get askEveryTime => '매번 폴더 묻기';
+
+  @override
+  String get askEveryTimeSub => '압축을 풀거나 만들 때마다 위치를 선택합니다';
+
+  @override
+  String get allFilesAccess => '모든 파일 접근';
+
+  @override
+  String get allFilesAccessOn => '허용됨: 모든 폴더를 사용할 수 있습니다';
+
+  @override
+  String get allFilesAccessOff => '다운로드 등의 폴더에 저장하려면 필요합니다. 눌러서 허용하세요.';
+
+  @override
+  String get folderNotWritableTitle => '이 폴더에는 저장할 수 없습니다';
+
+  @override
+  String get folderNotWritableBody =>
+      '“모든 파일 접근”을 허용하지 않으면 안드로이드는 ZipFast가 자체 폴더에만 쓰도록 제한합니다.';
+
+  @override
+  String get grantAccess => '접근 허용';
+
+  @override
   String get settingsTitle => '설정';
 
   @override

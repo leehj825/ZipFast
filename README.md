@@ -19,6 +19,7 @@ Everything is free: there is no Pro tier, no purchase, and no feature gating.
 | Partial extraction | Check files/folders in the viewer, extract only those |
 | Previews | Images and text, read straight from the archive |
 | Create | ZIP, 7Z, TAR.GZ; 4 compression levels; AES-256 password (ZIP, 7Z); split into volumes (10 / 25 / 100 MB or custom) |
+| Locations | Choose the extract / save folder per job, set defaults in Settings, or have the app ask every time |
 | Safety | Zip Slip / path-traversal blocked in both engines, symlinks never created |
 | Big files | Streamed from disk, background work, cancellable |
 | "Open with ZipFast" | Android intent filters + `MainActivity` hand-off |
@@ -54,6 +55,20 @@ which the product promises; 7-Zip does both, and also reads RAR5 and creates 7Z.
 * Foreground service / notification progress for long jobs; PDF preview; batch extraction.
 * Ads: `AdBannerSlot` is where an AdMob banner goes; it shows a placeholder in debug builds and nothing
   in release.
+
+## Choosing where files go
+
+* **Extract:** in the extract sheet pick *new folder next to the archive*, *same folder*, or
+  *choose folder* (optionally inside a new subfolder). **Settings → Default extract folder** preselects
+  a folder; **Ask for a folder every time** opens the folder picker on every extract / create.
+* **Create:** the *Save to* row in the create sheet changes the folder for that archive;
+  **Settings → Default save folder** sets the default (otherwise ZipFast's own storage).
+* On Android 11+ apps may only write to their own folders unless **All files access** is granted.
+  ZipFast checks a picked folder and, if Android blocks it, offers to open that system screen
+  (Settings also has a tile for it). The manifest declares `MANAGE_EXTERNAL_STORAGE` for this; Google Play
+  only allows it for approved use cases, so remove it (and the tile) for a Play build.
+  Android 10 and older would additionally need the legacy write permission, which is not requested yet.
+* `StoragePlugin.kt` (the permission check) is, like the rest of the Android code, uncompiled here.
 
 ## Storage model
 

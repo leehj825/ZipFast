@@ -100,6 +100,10 @@ class StorageService {
     return (parent: fallbackExtractRoot, usedFallback: true);
   }
 
+  /// Whether anything (file, folder, link) exists at [path].
+  static bool pathExists(String path) =>
+      FileSystemEntity.typeSync(path, followLinks: false) != FileSystemEntityType.notFound;
+
   /// Returns `true` if files can be created in [dir].
   static bool isWritable(String dir) {
     try {

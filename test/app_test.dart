@@ -54,4 +54,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('언어'), findsOneWidget);
   });
+
+  testWidgets('settings: location options are shown and "ask every time" toggles', (tester) async {
+    await pumpApp(tester, locale: 'en');
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+    expect(find.text('Default extract folder'), findsOneWidget);
+    expect(find.text('New folder next to the archive'), findsOneWidget);
+    expect(find.text('Default save folder for new archives'), findsOneWidget);
+    expect(find.text('ZipFast storage'), findsOneWidget);
+    await tester.tap(find.text('Ask for a folder every time'));
+    await tester.pumpAndSettle();
+    final sw = tester.widget<SwitchListTile>(find.widgetWithText(SwitchListTile, 'Ask for a folder every time'));
+    expect(sw.value, isTrue);
+  });
 }

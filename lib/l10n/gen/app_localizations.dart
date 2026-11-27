@@ -704,6 +704,108 @@ abstract class AppLocalizations {
   /// **'Volumes are named .001, .002, … Open the .001 file to extract.'**
   String get splitVolumesNote;
 
+  /// No description provided for @extractLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Default extract folder'**
+  String get extractLocation;
+
+  /// No description provided for @extractLocationNextTo.
+  ///
+  /// In en, this message translates to:
+  /// **'New folder next to the archive'**
+  String get extractLocationNextTo;
+
+  /// No description provided for @saveLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Default save folder for new archives'**
+  String get saveLocation;
+
+  /// No description provided for @saveLocationApp.
+  ///
+  /// In en, this message translates to:
+  /// **'ZipFast storage'**
+  String get saveLocationApp;
+
+  /// No description provided for @chooseFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose folder…'**
+  String get chooseFolder;
+
+  /// No description provided for @resetToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default'**
+  String get resetToDefault;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @saveTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to'**
+  String get saveTo;
+
+  /// No description provided for @createSubfolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Put files in a new folder'**
+  String get createSubfolder;
+
+  /// No description provided for @askEveryTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a folder every time'**
+  String get askEveryTime;
+
+  /// No description provided for @askEveryTimeSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the destination each time you extract or create'**
+  String get askEveryTimeSub;
+
+  /// No description provided for @allFilesAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All files access'**
+  String get allFilesAccess;
+
+  /// No description provided for @allFilesAccessOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Granted: any folder can be used'**
+  String get allFilesAccessOn;
+
+  /// No description provided for @allFilesAccessOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed to save to folders such as Downloads. Tap to allow.'**
+  String get allFilesAccessOff;
+
+  /// No description provided for @folderNotWritableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can’t write to this folder'**
+  String get folderNotWritableTitle;
+
+  /// No description provided for @folderNotWritableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Android only lets ZipFast write to its own folders unless you allow “All files access”.'**
+  String get folderNotWritableBody;
+
+  /// No description provided for @grantAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow access'**
+  String get grantAccess;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:

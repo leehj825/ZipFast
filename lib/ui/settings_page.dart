@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../engine/models.dart';
 import '../l10n/gen/app_localizations.dart';
+import '../services/storage_access_service.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
+import 'actions.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -87,6 +89,48 @@ class SettingsPage extends StatelessWidget {
             if (c != null) state.setDefaultConflict(c);
           },
         ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.unarchive_outlined),
+          title: Text(l10n.extractLocation),
+          subtitle: Text(state.extractDir ?? l10n.extractLocationNextTo),
+          trailing: state.extractDir == null
+              ? null
+              : IconButton(
+                  tooltip: l10n.resetToDefault,
+                  icon: const Icon(Icons.restart_alt),
+                  onPressed: () => state.setExtractDir(null),
+                ),
+          onTap: () async {
+            final dir = await pickWritableFolder(context);
+            if (dir != null) state.setExtractDir(dir);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.archive_outlined),
+          title: Text(l10n.saveLocation),
+          subtitle: Text(state.createDir ?? l10n.saveLocationApp),
+          trailing: state.createDir == null
+              ? null
+              : IconButton(
+                  tooltip: l10n.resetToDefault,
+                  icon: const Icon(Icons.restart_alt),
+                  onPressed: () => state.setCreateDir(null),
+                ),
+          onTap: () async {
+            final dir = await pickWritableFolder(context);
+            if (dir != null) state.setCreateDir(dir);
+          },
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.help_outline),
+          title: Text(l10n.askEveryTime),
+          subtitle: Text(l10n.askEveryTimeSub),
+          value: state.askEachTime,
+          onChanged: state.setAskEachTime,
+        ),
+        const _AllFilesAccessTile(),
+        const Divider(),
         ListTile(
           leading: const Icon(Icons.cleaning_services_outlined),
           title: Text(l10n.clearCache),
@@ -113,6 +157,54 @@ class SettingsPage extends StatelessWidget {
           isThreeLine: true,
         ),
       ]),
+    );
+  }
+}
+
+/// Shows whether Android "All files access" is granted and opens its settings.
+class _AllFilesAccessTile extends StatefulWidget {
+  const _AllFilesAccessTile();
+
+  @override
+  State<_AllFilesAccessTile> createState() => _AllFilesAccessTileState();
+}
+
+class _AllFilesAccessTileState extends State<_AllFilesAccessTile> with WidgetsBindingObserver {
+  bool? _granted;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refresh();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Re-check when the user comes back from the system settings screen.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refresh();
+  }
+
+  Future<void> _refresh() async {
+    final granted = await StorageAccessService.hasAllFilesAccess();
+    if (mounted) setState(() => _granted = granted);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final granted = _granted ?? true;
+    return ListTile(
+      leading: Icon(granted ? Icons.verified_user_outlined : Icons.folder_off_outlined),
+      title: Text(l10n.allFilesAccess),
+      subtitle: Text(granted ? l10n.allFilesAccessOn : l10n.allFilesAccessOff),
+      onTap: granted ? null : StorageAccessService.openAllFilesAccessSettings,
     );
   }
 }

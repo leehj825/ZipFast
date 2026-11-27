@@ -22,6 +22,7 @@ import kotlin.concurrent.thread
 class MainActivity : FlutterActivity() {
     private var channel: MethodChannel? = null
     private var enginePlugin: EnginePlugin? = null
+    private var storagePlugin: StoragePlugin? = null
     private val mainHandler = Handler(Looper.getMainLooper())
 
     // Result of the launch intent, or a Dart request waiting for it.
@@ -32,6 +33,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         enginePlugin = EnginePlugin(flutterEngine.dartExecutor.binaryMessenger)
+        storagePlugin = StoragePlugin(this, flutterEngine.dartExecutor.binaryMessenger)
         val ch = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "com.zipfast.zipfast/incoming"

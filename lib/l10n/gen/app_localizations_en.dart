@@ -343,6 +343,60 @@ class AppLocalizationsEn extends AppLocalizations {
       'Volumes are named .001, .002, … Open the .001 file to extract.';
 
   @override
+  String get extractLocation => 'Default extract folder';
+
+  @override
+  String get extractLocationNextTo => 'New folder next to the archive';
+
+  @override
+  String get saveLocation => 'Default save folder for new archives';
+
+  @override
+  String get saveLocationApp => 'ZipFast storage';
+
+  @override
+  String get chooseFolder => 'Choose folder…';
+
+  @override
+  String get resetToDefault => 'Reset to default';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get saveTo => 'Save to';
+
+  @override
+  String get createSubfolder => 'Put files in a new folder';
+
+  @override
+  String get askEveryTime => 'Ask for a folder every time';
+
+  @override
+  String get askEveryTimeSub =>
+      'Pick the destination each time you extract or create';
+
+  @override
+  String get allFilesAccess => 'All files access';
+
+  @override
+  String get allFilesAccessOn => 'Granted: any folder can be used';
+
+  @override
+  String get allFilesAccessOff =>
+      'Needed to save to folders such as Downloads. Tap to allow.';
+
+  @override
+  String get folderNotWritableTitle => 'Can’t write to this folder';
+
+  @override
+  String get folderNotWritableBody =>
+      'Android only lets ZipFast write to its own folders unless you allow “All files access”.';
+
+  @override
+  String get grantAccess => 'Allow access';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

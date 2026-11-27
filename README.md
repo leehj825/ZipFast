@@ -19,7 +19,7 @@ Everything is free: there is no Pro tier, no purchase, and no feature gating.
 | Partial extraction | Check files/folders in the viewer, extract only those |
 | Previews | Images and text, read straight from the archive |
 | Create | ZIP, 7Z, TAR.GZ; 4 compression levels; AES-256 password (ZIP, 7Z); split into volumes (10 / 25 / 100 MB or custom) |
-| Locations | Choose the extract / save folder per job, set defaults in Settings, or have the app ask every time |
+| Files | In-app file manager for ZipFast's folder: open, share, rename, move, delete, new folder; choose extract / save folder per job, set defaults, or be asked every time |
 | Safety | Zip Slip / path-traversal blocked in both engines, symlinks never created |
 | Big files | Streamed from disk, background work, cancellable |
 | "Open with ZipFast" | Android intent filters + `MainActivity` hand-off |
@@ -56,28 +56,25 @@ which the product promises; 7-Zip does both, and also reads RAR5 and creates 7Z.
 * Ads: `AdBannerSlot` is where an AdMob banner goes; it shows a placeholder in debug builds and nothing
   in release.
 
-## Choosing where files go
+## Where files live, and getting them out
 
-* **Extract:** in the extract sheet pick *new folder next to the archive*, *same folder*, or
-  *choose folder* (optionally inside a new subfolder). **Settings → Default extract folder** preselects
-  a folder; **Ask for a folder every time** opens the folder picker on every extract / create.
-* **Create:** the *Save to* row in the create sheet changes the folder for that archive;
-  **Settings → Default save folder** sets the default (otherwise ZipFast's own storage).
-* On Android 11+ apps may only write to their own folders unless **All files access** is granted.
-  ZipFast checks a picked folder and, if Android blocks it, offers to open that system screen
-  (Settings also has a tile for it). The manifest declares `MANAGE_EXTERNAL_STORAGE` for this; Google Play
-  only allows it for approved use cases, so remove it (and the tile) for a Play build.
-  Android 10 and older would additionally need the legacy write permission, which is not requested yet.
-* `StoragePlugin.kt` (the permission check) is, like the rest of the Android code, uncompiled here.
+ZipFast keeps results in **its own storage folder** (`Android/data/<app>/files`), so it needs no broad
+storage permission and works the same on every Android version (and passes Google Play policy).
+Other apps cannot read that folder directly, so the app includes a file manager and ways out:
 
-## Storage model
-
-Google Play restricts all-files access, so ZipFast requests no broad storage
-permission. Files come in through the system picker or "Open with". Extraction
-goes next to the archive when that folder is writable and durable, otherwise to
-the app's own storage (`Android/data/<app>/files/Extracted`), and the app says
-so. The "Browse device" tab and the recent-files scan degrade to an explanatory
-empty state when Android denies directory listing.
+* **Files tab** (also opened by **Show files** after an extract / create): browse the folder, open an
+  archive in ZipFast, open any other file in another app, **share** files through the system share sheet,
+  rename, move (in-app folder picker), delete, create folders, multi-select, and compress a selection.
+  Everything is confined to the storage folder (guarded and tested in `lib/state/file_ops.dart`).
+* **Choosing where to extract / save:** the extract sheet offers *new folder next to the archive*
+  (falls back to app storage if that folder isn't writable), *same folder*, or *choose folder* in the
+  in-app picker (with an optional new subfolder). The create sheet has a *Save to* row. In Settings you
+  can set a default extract folder and a default save folder, or turn on **Ask for a folder every time**.
+* Not done: copying results to a folder outside the app through the system folder picker (SAF). That is
+  the standard permission-free way to export and is the natural next step; share/open cover most needs
+  meanwhile. Sharing a split archive shares only the volume you select.
+* `open_filex` and `share_plus` provide the FileProvider plumbing for open/share. Like the rest of the
+  Android side, it has not been built or run on a device here.
 
 ## Project layout
 

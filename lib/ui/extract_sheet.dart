@@ -74,7 +74,7 @@ class _ExtractSheetState extends State<_ExtractSheet> {
   }
 
   Future<void> _pickCustom() async {
-    final dir = await pickWritableFolder(context);
+    final dir = await pickAppFolder(context);
     if (dir != null && mounted) {
       setState(() {
         _customDir = dir;
@@ -95,7 +95,7 @@ class _ExtractSheetState extends State<_ExtractSheet> {
     var target = _dest;
     var customDir = _customDir;
     if (askEachTime) {
-      final dir = await pickWritableFolder(context);
+      final dir = await pickAppFolder(context);
       if (dir == null || !mounted) return;
       target = ExtractTarget.custom;
       customDir = dir;
@@ -265,6 +265,11 @@ class _ExtractSummary extends StatelessWidget {
           Text(l10n.skippedNote(result.skipped)),
         ],
         const SizedBox(height: 8),
+        TextButton.icon(
+          onPressed: () => showFilesIn(context, result.destinationDir),
+          icon: const Icon(Icons.folder_open, size: 18),
+          label: Text(l10n.showFiles),
+        ),
         TextButton.icon(
           onPressed: () async {
             await Clipboard.setData(ClipboardData(text: result.destinationDir));

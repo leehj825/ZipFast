@@ -28,7 +28,7 @@ void main() {
     await pumpApp(tester, locale: 'en');
     expect(find.text('ZipFast'), findsOneWidget);
     expect(find.text('Recent archives'), findsOneWidget);
-    expect(find.text('Browse device'), findsOneWidget);
+    expect(find.text('Files'), findsOneWidget);
     expect(find.text('Create archive'), findsOneWidget);
     expect(find.text('Extract archive'), findsOneWidget);
     expect(find.text('Open archive'), findsOneWidget);
@@ -37,7 +37,7 @@ void main() {
   testWidgets('home screen renders in Korean', (tester) async {
     await pumpApp(tester, locale: 'ko');
     expect(find.text('최근 압축 파일'), findsOneWidget);
-    expect(find.text('기기 폴더 탐색'), findsOneWidget);
+    expect(find.text('파일'), findsOneWidget);
     expect(find.text('압축하기'), findsOneWidget);
     expect(find.text('압축 풀기'), findsOneWidget);
     expect(find.text('압축 파일 열기'), findsOneWidget);

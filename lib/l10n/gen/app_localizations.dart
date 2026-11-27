@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabBrowse.
   ///
   /// In en, this message translates to:
-  /// **'Browse device'**
+  /// **'Files'**
   String get tabBrowse;
 
   /// No description provided for @recentArchivesTitle.
@@ -770,41 +770,143 @@ abstract class AppLocalizations {
   /// **'Pick the destination each time you extract or create'**
   String get askEveryTimeSub;
 
-  /// No description provided for @allFilesAccess.
+  /// No description provided for @storageRoot.
   ///
   /// In en, this message translates to:
-  /// **'All files access'**
-  String get allFilesAccess;
+  /// **'ZipFast storage'**
+  String get storageRoot;
 
-  /// No description provided for @allFilesAccessOn.
+  /// No description provided for @newFolder.
   ///
   /// In en, this message translates to:
-  /// **'Granted: any folder can be used'**
-  String get allFilesAccessOn;
+  /// **'New folder'**
+  String get newFolder;
 
-  /// No description provided for @allFilesAccessOff.
+  /// No description provided for @folderName.
   ///
   /// In en, this message translates to:
-  /// **'Needed to save to folders such as Downloads. Tap to allow.'**
-  String get allFilesAccessOff;
+  /// **'Folder name'**
+  String get folderName;
 
-  /// No description provided for @folderNotWritableTitle.
+  /// No description provided for @rename.
   ///
   /// In en, this message translates to:
-  /// **'Can’t write to this folder'**
-  String get folderNotWritableTitle;
+  /// **'Rename'**
+  String get rename;
 
-  /// No description provided for @folderNotWritableBody.
+  /// No description provided for @newName.
   ///
   /// In en, this message translates to:
-  /// **'Android only lets ZipFast write to its own folders unless you allow “All files access”.'**
-  String get folderNotWritableBody;
+  /// **'New name'**
+  String get newName;
 
-  /// No description provided for @grantAccess.
+  /// No description provided for @moveTo.
   ///
   /// In en, this message translates to:
-  /// **'Allow access'**
-  String get grantAccess;
+  /// **'Move to…'**
+  String get moveTo;
+
+  /// No description provided for @moveHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Move here'**
+  String get moveHere;
+
+  /// No description provided for @useThisFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this folder'**
+  String get useThisFolder;
+
+  /// No description provided for @chooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder'**
+  String get chooseDestination;
+
+  /// No description provided for @shareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareAction;
+
+  /// No description provided for @shareFoldersNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders can’t be shared. Compress them first.'**
+  String get shareFoldersNote;
+
+  /// No description provided for @openWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Open with…'**
+  String get openWith;
+
+  /// No description provided for @noAppToOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'No app can open this file.'**
+  String get noAppToOpen;
+
+  /// No description provided for @deleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {count} items?'**
+  String deleteConfirmTitle(int count);
+
+  /// No description provided for @deleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This can’t be undone.'**
+  String get deleteConfirmBody;
+
+  /// No description provided for @opNameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That name isn’t allowed.'**
+  String get opNameInvalid;
+
+  /// No description provided for @opNameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Something with that name already exists.'**
+  String get opNameTaken;
+
+  /// No description provided for @opIntoItself.
+  ///
+  /// In en, this message translates to:
+  /// **'A folder can’t be moved into itself.'**
+  String get opIntoItself;
+
+  /// No description provided for @opFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The operation failed.'**
+  String get opFailed;
+
+  /// No description provided for @showFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Show files'**
+  String get showFiles;
+
+  /// No description provided for @selectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(int count);
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @storageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.'**
+  String get storageHint;
 
   /// No description provided for @settingsTitle.
   ///

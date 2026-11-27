@@ -46,7 +46,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tabRecent => '최근 압축 파일';
 
   @override
-  String get tabBrowse => '기기 폴더 탐색';
+  String get tabBrowse => '파일';
 
   @override
   String recentArchivesTitle(int count) {
@@ -372,23 +372,78 @@ class AppLocalizationsKo extends AppLocalizations {
   String get askEveryTimeSub => '압축을 풀거나 만들 때마다 위치를 선택합니다';
 
   @override
-  String get allFilesAccess => '모든 파일 접근';
+  String get storageRoot => 'ZipFast 저장소';
 
   @override
-  String get allFilesAccessOn => '허용됨: 모든 폴더를 사용할 수 있습니다';
+  String get newFolder => '새 폴더';
 
   @override
-  String get allFilesAccessOff => '다운로드 등의 폴더에 저장하려면 필요합니다. 눌러서 허용하세요.';
+  String get folderName => '폴더 이름';
 
   @override
-  String get folderNotWritableTitle => '이 폴더에는 저장할 수 없습니다';
+  String get rename => '이름 변경';
 
   @override
-  String get folderNotWritableBody =>
-      '“모든 파일 접근”을 허용하지 않으면 안드로이드는 ZipFast가 자체 폴더에만 쓰도록 제한합니다.';
+  String get newName => '새 이름';
 
   @override
-  String get grantAccess => '접근 허용';
+  String get moveTo => '이동…';
+
+  @override
+  String get moveHere => '여기로 이동';
+
+  @override
+  String get useThisFolder => '이 폴더 사용';
+
+  @override
+  String get chooseDestination => '폴더 선택';
+
+  @override
+  String get shareAction => '공유';
+
+  @override
+  String get shareFoldersNote => '폴더는 공유할 수 없습니다. 먼저 압축하세요.';
+
+  @override
+  String get openWith => '다른 앱으로 열기';
+
+  @override
+  String get noAppToOpen => '이 파일을 열 수 있는 앱이 없습니다.';
+
+  @override
+  String deleteConfirmTitle(int count) {
+    return '$count개 항목을 삭제할까요?';
+  }
+
+  @override
+  String get deleteConfirmBody => '되돌릴 수 없습니다.';
+
+  @override
+  String get opNameInvalid => '사용할 수 없는 이름입니다.';
+
+  @override
+  String get opNameTaken => '같은 이름이 이미 있습니다.';
+
+  @override
+  String get opIntoItself => '폴더를 자기 자신 안으로 옮길 수 없습니다.';
+
+  @override
+  String get opFailed => '작업에 실패했습니다.';
+
+  @override
+  String get showFiles => '파일 보기';
+
+  @override
+  String selectedCount(int count) {
+    return '$count개 선택됨';
+  }
+
+  @override
+  String get refresh => '새로고침';
+
+  @override
+  String get storageHint =>
+      '결과는 ZipFast 자체 폴더에 저장됩니다. 다른 앱에서 쓰려면 파일을 열거나 공유하세요.';
 
   @override
   String get settingsTitle => '설정';

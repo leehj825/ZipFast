@@ -12,7 +12,7 @@
   "retry": "Retry",
   "delete": "Delete",
   "tabRecent": "Recent archives",
-  "tabBrowse": "Browse device",
+  "tabBrowse": "Files",
   "recentArchivesTitle": "Recent archives ({count})",
   "@recentArchivesTitle": {
     "placeholders": {
@@ -202,12 +202,43 @@
   "createSubfolder": "Put files in a new folder",
   "askEveryTime": "Ask for a folder every time",
   "askEveryTimeSub": "Pick the destination each time you extract or create",
-  "allFilesAccess": "All files access",
-  "allFilesAccessOn": "Granted: any folder can be used",
-  "allFilesAccessOff": "Needed to save to folders such as Downloads. Tap to allow.",
-  "folderNotWritableTitle": "Can’t write to this folder",
-  "folderNotWritableBody": "Android only lets ZipFast write to its own folders unless you allow “All files access”.",
-  "grantAccess": "Allow access",
+  "storageRoot": "ZipFast storage",
+  "newFolder": "New folder",
+  "folderName": "Folder name",
+  "rename": "Rename",
+  "newName": "New name",
+  "moveTo": "Move to…",
+  "moveHere": "Move here",
+  "useThisFolder": "Use this folder",
+  "chooseDestination": "Choose a folder",
+  "shareAction": "Share",
+  "shareFoldersNote": "Folders can’t be shared. Compress them first.",
+  "openWith": "Open with…",
+  "noAppToOpen": "No app can open this file.",
+  "deleteConfirmTitle": "Delete {count} items?",
+  "@deleteConfirmTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteConfirmBody": "This can’t be undone.",
+  "opNameInvalid": "That name isn’t allowed.",
+  "opNameTaken": "Something with that name already exists.",
+  "opIntoItself": "A folder can’t be moved into itself.",
+  "opFailed": "The operation failed.",
+  "showFiles": "Show files",
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refresh": "Refresh",
+  "storageHint": "Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.",
   "settingsTitle": "Settings",
   "theme": "Theme",
   "themeSystem": "System",

@@ -46,7 +46,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabRecent => 'Recent archives';
 
   @override
-  String get tabBrowse => 'Browse device';
+  String get tabBrowse => 'Files';
 
   @override
   String recentArchivesTitle(int count) {
@@ -377,24 +377,79 @@ class AppLocalizationsEn extends AppLocalizations {
       'Pick the destination each time you extract or create';
 
   @override
-  String get allFilesAccess => 'All files access';
+  String get storageRoot => 'ZipFast storage';
 
   @override
-  String get allFilesAccessOn => 'Granted: any folder can be used';
+  String get newFolder => 'New folder';
 
   @override
-  String get allFilesAccessOff =>
-      'Needed to save to folders such as Downloads. Tap to allow.';
+  String get folderName => 'Folder name';
 
   @override
-  String get folderNotWritableTitle => 'Can’t write to this folder';
+  String get rename => 'Rename';
 
   @override
-  String get folderNotWritableBody =>
-      'Android only lets ZipFast write to its own folders unless you allow “All files access”.';
+  String get newName => 'New name';
 
   @override
-  String get grantAccess => 'Allow access';
+  String get moveTo => 'Move to…';
+
+  @override
+  String get moveHere => 'Move here';
+
+  @override
+  String get useThisFolder => 'Use this folder';
+
+  @override
+  String get chooseDestination => 'Choose a folder';
+
+  @override
+  String get shareAction => 'Share';
+
+  @override
+  String get shareFoldersNote =>
+      'Folders can’t be shared. Compress them first.';
+
+  @override
+  String get openWith => 'Open with…';
+
+  @override
+  String get noAppToOpen => 'No app can open this file.';
+
+  @override
+  String deleteConfirmTitle(int count) {
+    return 'Delete $count items?';
+  }
+
+  @override
+  String get deleteConfirmBody => 'This can’t be undone.';
+
+  @override
+  String get opNameInvalid => 'That name isn’t allowed.';
+
+  @override
+  String get opNameTaken => 'Something with that name already exists.';
+
+  @override
+  String get opIntoItself => 'A folder can’t be moved into itself.';
+
+  @override
+  String get opFailed => 'The operation failed.';
+
+  @override
+  String get showFiles => 'Show files';
+
+  @override
+  String selectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get storageHint =>
+      'Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.';
 
   @override
   String get settingsTitle => 'Settings';

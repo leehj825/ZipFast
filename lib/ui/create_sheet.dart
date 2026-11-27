@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../engine/composite_engine.dart';
 import '../engine/models.dart';
 import '../l10n/gen/app_localizations.dart';
+import '../services/external_file_service.dart';
 import '../state/app_state.dart';
 import '../state/destinations.dart';
 import 'actions.dart';
@@ -80,7 +81,7 @@ class _CreateSheetState extends State<_CreateSheet> {
     var folder = _saveDir;
     if (appState.askEachTime) {
       // "Ask every time": choose the folder now.
-      folder = await pickWritableFolder(context);
+      folder = await pickAppFolder(context);
       if (folder == null || !mounted) return;
     }
     if (folder != null && !StorageService.isWritable(folder)) folder = null;
@@ -111,7 +112,26 @@ class _CreateSheetState extends State<_CreateSheet> {
       handle,
       title: l10n.creating,
       doneTitle: l10n.createdTitle,
-      doneBuilder: (ctx, path) => Text(l10n.createdSummary(path)),
+      doneBuilder: (ctx, path) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.createdSummary(path)),
+          const SizedBox(height: 8),
+          Wrap(spacing: 8, children: [
+            TextButton.icon(
+              onPressed: () => ExternalFileService.share([path]),
+              icon: const Icon(Icons.share_outlined, size: 18),
+              label: Text(l10n.shareAction),
+            ),
+            TextButton.icon(
+              onPressed: () => showFilesIn(ctx, path),
+              icon: const Icon(Icons.folder_open, size: 18),
+              label: Text(l10n.showFiles),
+            ),
+          ]),
+        ],
+      ),
     );
     if (result != null) await history.addToHistory(result);
   }
@@ -156,7 +176,7 @@ class _CreateSheetState extends State<_CreateSheet> {
                 ),
                 trailing: TextButton(
                   onPressed: () async {
-                    final dir = await pickWritableFolder(context);
+                    final dir = await pickAppFolder(context);
                     if (dir != null && mounted) setState(() => _saveDir = dir);
                   },
                   child: Text(l10n.change),

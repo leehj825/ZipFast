@@ -62,7 +62,13 @@ class StorageService {
     } catch (_) {
       files = await getApplicationDocumentsDirectory();
     }
-    return StorageService._(temp.path, files.path, cache.path);
+    final service = StorageService._(temp.path, files.path, cache.path);
+    for (final dir in [service.fallbackExtractRoot, service.createRoot]) {
+      try {
+        Directory(dir).createSync(recursive: true);
+      } catch (_) {}
+    }
+    return service;
   }
 
   /// Deletes preview/scratch files.

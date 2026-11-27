@@ -1,13 +1,13 @@
-// ignore_for_file: deprecated_member_use
 import 'package:file_picker/file_picker.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/models.dart';
 import '../l10n/gen/app_localizations.dart';
-import '../services/storage_access_service.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
+import 'file_browser.dart';
+import 'folder_picker_page.dart';
 import 'viewer_page.dart';
 
 /// Opens [path] in the archive viewer and records it in the history.
@@ -35,30 +35,21 @@ String describeError(AppLocalizations l10n, Object error) {
   return l10n.genericError('$error');
 }
 
-/// Lets the user pick a folder and makes sure ZipFast can write there.
-///
-/// If Android blocks writing, explains why and offers to open the "All files
-/// access" screen. Returns the folder, or `null` if cancelled / not usable.
-Future<String?> pickWritableFolder(BuildContext context) async {
-  final dir = await FilePicker.getDirectoryPath();
-  if (dir == null || !context.mounted) return null;
-  if (StorageService.isWritable(dir)) return dir;
-
-  final l10n = AppLocalizations.of(context);
-  final granted = await StorageAccessService.hasAllFilesAccess();
-  if (!context.mounted) return null;
-  final openSettings = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text(l10n.folderNotWritableTitle),
-      content: Text(granted ? dir : '${l10n.folderNotWritableBody}\n\n$dir'),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.close)),
-        if (!granted)
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.grantAccess)),
-      ],
-    ),
+/// Lets the user pick a folder inside ZipFast's storage (see [FolderPickerPage]).
+/// Returns `null` if cancelled.
+Future<String?> pickAppFolder(BuildContext context, {String? start}) {
+  final root = context.read<StorageService>().appFilesDir;
+  return Navigator.push<String>(
+    context,
+    MaterialPageRoute<String>(builder: (_) => FolderPickerPage(root: root, start: start)),
   );
-  if (openSettings == true) await StorageAccessService.openAllFilesAccessSettings();
-  return null;
+}
+
+/// Opens the file browser on [dir] (or the folder that holds [dir] if it is a file).
+Future<void> showFilesIn(BuildContext context, String dir) {
+  final storage = context.read<StorageService>();
+  return Navigator.push<void>(
+    context,
+    MaterialPageRoute<void>(builder: (_) => FilesPage(appRoot: storage.appFilesDir, initialDir: dir)),
+  );
 }

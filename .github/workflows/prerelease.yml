@@ -1,8 +1,10 @@
 name: Prerelease
 
 # Builds the Android APKs and publishes them as a GitHub *prerelease*.
-#  - Run manually: Actions -> Prerelease -> Run workflow
-#  - Or push a tag such as v0.1.0-pre.1
+#  - Every push to ANY branch builds and publishes a prerelease
+#    (tag: v<pubspec version>-pre.<run number>)
+#  - Pushing a tag such as v0.1.0-pre.1 uses that tag instead
+#  - Or run manually: Actions -> Prerelease -> Run workflow
 on:
   workflow_dispatch:
     inputs:
@@ -11,6 +13,8 @@ on:
         required: false
         type: string
   push:
+    branches:
+      - '**'
     tags:
       - 'v*'
 
@@ -74,7 +78,7 @@ jobs:
         id: meta
         run: |
           VERSION=$(grep -E '^version:' pubspec.yaml | head -1 | sed -E 's/version:[[:space:]]*//; s/\+.*//')
-          if [ "${{ github.event_name }}" = "push" ]; then
+          if [ "${{ github.ref_type }}" = "tag" ]; then
             TAG="${GITHUB_REF_NAME}"
           elif [ -n "${{ inputs.tag }}" ]; then
             TAG="${{ inputs.tag }}"

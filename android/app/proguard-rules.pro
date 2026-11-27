@@ -11,15 +11,3 @@
 -keep class com.zipfast.zipfast.engine.** { *; }
 
 -keepattributes Signature,InnerClasses,EnclosingMethod,*Annotation*
-
-# ---- Room / WorkManager (pulled in by the Google Mobile Ads SDK) -------------
-# WorkManager starts at app launch (androidx.startup) and builds its Room database by
-# reflection (WorkDatabase_Impl and the *_Impl DAOs). If R8 renames or strips them the app
-# dies at launch, before any Dart code runs.
--keep class * extends androidx.room.RoomDatabase { *; }
--keep class androidx.work.impl.WorkDatabase_Impl { *; }
--keep class androidx.work.impl.** { *; }
--keep class androidx.work.** { *; }
--keep class androidx.startup.** { *; }
--keep class * extends androidx.startup.Initializer { *; }
--dontwarn androidx.work.**

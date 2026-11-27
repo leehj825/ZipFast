@@ -21,6 +21,7 @@ class AppState extends ChangeNotifier {
     _extractDir = _prefs.getString(_kExtractDir);
     _createDir = _prefs.getString(_kCreateDir);
     _askEachTime = _prefs.getBool(_kAsk) ?? false;
+    _exportUri = _prefs.getString(_kExportUri);
   }
 
   static const _kTheme = 'theme_mode';
@@ -30,6 +31,7 @@ class AppState extends ChangeNotifier {
   static const _kExtractDir = 'extract_dir';
   static const _kCreateDir = 'create_dir';
   static const _kAsk = 'ask_each_time';
+  static const _kExportUri = 'export_uri';
   static const maxHistory = 50;
 
   final SharedPreferences _prefs;
@@ -41,6 +43,7 @@ class AppState extends ChangeNotifier {
   String? _extractDir;
   String? _createDir;
   late bool _askEachTime;
+  String? _exportUri;
 
   ThemeMode get themeMode => _themeMode;
 
@@ -65,6 +68,11 @@ class AppState extends ChangeNotifier {
   Future<void> setExtractDir(String? dir) => _setString(_kExtractDir, dir, (v) => _extractDir = v);
 
   Future<void> setCreateDir(String? dir) => _setString(_kCreateDir, dir, (v) => _createDir = v);
+
+  /// Folder (a `content://` tree URI) last chosen for "Save a copy to…".
+  String? get exportUri => _exportUri;
+
+  Future<void> setExportUri(String? uri) => _setString(_kExportUri, uri, (v) => _exportUri = v);
 
   Future<void> setAskEachTime(bool value) async {
     _askEachTime = value;

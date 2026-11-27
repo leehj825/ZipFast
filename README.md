@@ -70,9 +70,14 @@ Other apps cannot read that folder directly, so the app includes a file manager 
   (falls back to app storage if that folder isn't writable), *same folder*, or *choose folder* in the
   in-app picker (with an optional new subfolder). The create sheet has a *Save to* row. In Settings you
   can set a default extract folder and a default save folder, or turn on **Ask for a folder every time**.
-* Not done: copying results to a folder outside the app through the system folder picker (SAF). That is
-  the standard permission-free way to export and is the natural next step; share/open cover most needs
-  meanwhile. Sharing a split archive shares only the volume you select.
+* **Save a copy to…** (Files tab selection bar, and the buttons after extract / create) copies files or
+  folders to any folder you pick with Android's system folder picker (Storage Access Framework). No
+  permission is declared: choosing the folder is the grant, and ZipFast remembers it, offering it as a
+  one-tap choice next time (and asking again if Android revoked it). Android 11+ does not let apps be
+  granted the storage root, `Download` itself, or `Android/data`; pick a subfolder (e.g. `Download/Unpacked`).
+  The copy logic (`TreeExporter.java`: recursion, progress, cancel, MIME types, name cleaning, symlinks
+  skipped) is unit-tested on the host JVM; the thin `DocumentsContract` adapter in `ExportPlugin.kt` is not
+  compiled here. Split archives are copied and shared as the whole `.001`, `.002`, ... set.
 * `open_filex` and `share_plus` provide the FileProvider plumbing for open/share. Like the rest of the
   Android side, it has not been built or run on a device here.
 
@@ -113,6 +118,8 @@ and builds fixtures with `pip install py7zr pycdlib`:
 ```sh
 android/engine-test/run_tests.sh
 ```
+
+That script also tests `TreeExporter` (the "Save a copy to…" copy logic).
 
 Regenerating data files:
 

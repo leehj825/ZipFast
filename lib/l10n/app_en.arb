@@ -239,6 +239,32 @@
   },
   "refresh": "Refresh",
   "storageHint": "Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.",
+  "saveCopyTo": "Save a copy to…",
+  "saveCopyHere": "Save to {folder}",
+  "@saveCopyHere": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseAnotherFolder": "Choose another folder…",
+  "copying": "Copying…",
+  "copyDoneTitle": "Copy complete",
+  "copiedSummary": "{count} files copied to\n{folder}",
+  "@copiedSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "exportUnavailable": "Saving to another folder isn’t available here.",
+  "exportAccessLost": "Access to that folder was removed. Choose it again.",
+  "exportNothing": "Nothing to copy.",
   "settingsTitle": "Settings",
   "theme": "Theme",
   "themeSystem": "System",

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import '../engine/models.dart';
+import '../services/export_service.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
@@ -30,6 +31,7 @@ String describeError(AppLocalizations l10n, Object error) {
   if (error is PasswordRequiredException) return l10n.passwordTitle;
   if (error is WrongPasswordException) return l10n.passwordWrong;
   if (error is JobCancelledException) return l10n.cancelled;
+  if (error is ExportAccessException) return l10n.exportAccessLost;
   if (error is UnsupportedFormatException) return l10n.unsupportedTitle(error.format.label);
   if (error is ZipFastException) return l10n.genericError(error.message);
   return l10n.genericError('$error');

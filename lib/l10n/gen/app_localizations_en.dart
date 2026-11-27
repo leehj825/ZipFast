@@ -452,6 +452,39 @@ class AppLocalizationsEn extends AppLocalizations {
       'Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.';
 
   @override
+  String get saveCopyTo => 'Save a copy to…';
+
+  @override
+  String saveCopyHere(String folder) {
+    return 'Save to $folder';
+  }
+
+  @override
+  String get chooseAnotherFolder => 'Choose another folder…';
+
+  @override
+  String get copying => 'Copying…';
+
+  @override
+  String get copyDoneTitle => 'Copy complete';
+
+  @override
+  String copiedSummary(int count, String folder) {
+    return '$count files copied to\n$folder';
+  }
+
+  @override
+  String get exportUnavailable =>
+      'Saving to another folder isn’t available here.';
+
+  @override
+  String get exportAccessLost =>
+      'Access to that folder was removed. Choose it again.';
+
+  @override
+  String get exportNothing => 'Nothing to copy.';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

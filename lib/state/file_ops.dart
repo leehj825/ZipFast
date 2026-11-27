@@ -137,3 +137,17 @@ Future<void> _copy(String from, String to) async {
     await File(from).copy(to);
   }
 }
+
+/// The files that make up [path]: all volumes (`.001`, `.002`, ...) when it is
+/// the first of a split archive, otherwise just [path].
+List<String> volumeSet(String path) {
+  if (!path.endsWith('.001')) return [path];
+  final base = path.substring(0, path.length - 4);
+  final volumes = <String>[];
+  for (var i = 1;; i++) {
+    final next = '$base.${i.toString().padLeft(3, '0')}';
+    if (!File(next).existsSync()) break;
+    volumes.add(next);
+  }
+  return volumes.isEmpty ? [path] : volumes;
+}

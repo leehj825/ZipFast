@@ -10,7 +10,9 @@ import '../l10n/gen/app_localizations.dart';
 import '../services/external_file_service.dart';
 import '../state/app_state.dart';
 import '../state/destinations.dart';
+import '../state/file_ops.dart';
 import 'actions.dart';
+import 'export_flow.dart';
 import '../state/storage_service.dart';
 import 'widgets/job_dialog.dart';
 
@@ -120,9 +122,14 @@ class _CreateSheetState extends State<_CreateSheet> {
           const SizedBox(height: 8),
           Wrap(spacing: 8, children: [
             TextButton.icon(
-              onPressed: () => ExternalFileService.share([path]),
+              onPressed: () => ExternalFileService.share(volumeSet(path)),
               icon: const Icon(Icons.share_outlined, size: 18),
               label: Text(l10n.shareAction),
+            ),
+            TextButton.icon(
+              onPressed: () => saveCopyTo(ctx, volumeSet(path)),
+              icon: const Icon(Icons.save_alt, size: 18),
+              label: Text(l10n.saveCopyTo),
             ),
             TextButton.icon(
               onPressed: () => showFilesIn(ctx, path),

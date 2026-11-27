@@ -11,6 +11,7 @@ import '../state/file_ops.dart';
 import '../state/storage_service.dart';
 import 'actions.dart';
 import 'create_sheet.dart';
+import 'export_flow.dart';
 import 'folder_picker_page.dart';
 import 'widgets/file_op_messages.dart';
 import 'widgets/format_badge.dart';
@@ -274,6 +275,11 @@ class _FileBrowserState extends State<FileBrowser> {
                   ),
                 ),
                 IconButton(tooltip: l10n.shareAction, icon: const Icon(Icons.share_outlined), onPressed: _share),
+                IconButton(
+                  tooltip: l10n.saveCopyTo,
+                  icon: const Icon(Icons.save_alt),
+                  onPressed: () => saveCopyTo(context, _selected.toList()),
+                ),
                 IconButton(tooltip: l10n.moveTo, icon: const Icon(Icons.drive_file_move_outlined), onPressed: _move),
                 if (_selected.length == 1)
                   IconButton(tooltip: l10n.rename, icon: const Icon(Icons.drive_file_rename_outline), onPressed: _rename),

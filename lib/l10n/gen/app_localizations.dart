@@ -908,6 +908,60 @@ abstract class AppLocalizations {
   /// **'Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.'**
   String get storageHint;
 
+  /// No description provided for @saveCopyTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a copy to…'**
+  String get saveCopyTo;
+
+  /// No description provided for @saveCopyHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to {folder}'**
+  String saveCopyHere(String folder);
+
+  /// No description provided for @chooseAnotherFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another folder…'**
+  String get chooseAnotherFolder;
+
+  /// No description provided for @copying.
+  ///
+  /// In en, this message translates to:
+  /// **'Copying…'**
+  String get copying;
+
+  /// No description provided for @copyDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy complete'**
+  String get copyDoneTitle;
+
+  /// No description provided for @copiedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} files copied to\n{folder}'**
+  String copiedSummary(int count, String folder);
+
+  /// No description provided for @exportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving to another folder isn’t available here.'**
+  String get exportUnavailable;
+
+  /// No description provided for @exportAccessLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to that folder was removed. Choose it again.'**
+  String get exportAccessLost;
+
+  /// No description provided for @exportNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to copy.'**
+  String get exportNothing;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:

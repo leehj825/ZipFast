@@ -8,7 +8,12 @@ import 'models.dart';
 /// The work runs in its own [Isolate] so the UI thread stays smooth even for
 /// multi-gigabyte archives. Cancelling kills the isolate immediately.
 class JobHandle<T> {
-  JobHandle._();
+  JobHandle._() {
+    // A job can fail before anyone (e.g. the progress dialog, built a frame
+    // later) is listening. Without this, Dart reports that as an unhandled
+    // error; late listeners still receive the error as usual.
+    _result.future.ignore();
+  }
 
   final Completer<T> _result = Completer<T>();
   final StreamController<JobProgress> _progress =

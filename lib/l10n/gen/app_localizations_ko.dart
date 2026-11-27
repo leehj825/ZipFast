@@ -446,6 +446,37 @@ class AppLocalizationsKo extends AppLocalizations {
       '결과는 ZipFast 자체 폴더에 저장됩니다. 다른 앱에서 쓰려면 파일을 열거나 공유하세요.';
 
   @override
+  String get saveCopyTo => '다른 위치에 저장…';
+
+  @override
+  String saveCopyHere(String folder) {
+    return '$folder에 저장';
+  }
+
+  @override
+  String get chooseAnotherFolder => '다른 폴더 선택…';
+
+  @override
+  String get copying => '복사하는 중…';
+
+  @override
+  String get copyDoneTitle => '복사 완료';
+
+  @override
+  String copiedSummary(int count, String folder) {
+    return '파일 $count개를 아래 폴더에 복사했습니다\n$folder';
+  }
+
+  @override
+  String get exportUnavailable => '이 환경에서는 다른 폴더에 저장할 수 없습니다.';
+
+  @override
+  String get exportAccessLost => '해당 폴더에 대한 접근이 해제되었습니다. 다시 선택하세요.';
+
+  @override
+  String get exportNothing => '복사할 항목이 없습니다.';
+
+  @override
   String get settingsTitle => '설정';
 
   @override

@@ -11,6 +11,7 @@ import '../state/app_state.dart';
 import '../state/destinations.dart';
 import '../state/storage_service.dart';
 import 'actions.dart';
+import 'export_flow.dart';
 import 'widgets/job_dialog.dart';
 
 /// Bottom sheet with extraction options, followed by the progress dialog.
@@ -265,6 +266,11 @@ class _ExtractSummary extends StatelessWidget {
           Text(l10n.skippedNote(result.skipped)),
         ],
         const SizedBox(height: 8),
+        TextButton.icon(
+          onPressed: () => saveCopyTo(context, [result.destinationDir]),
+          icon: const Icon(Icons.save_alt, size: 18),
+          label: Text(l10n.saveCopyTo),
+        ),
         TextButton.icon(
           onPressed: () => showFilesIn(context, result.destinationDir),
           icon: const Icon(Icons.folder_open, size: 18),

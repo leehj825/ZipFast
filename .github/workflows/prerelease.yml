@@ -1,6 +1,7 @@
 name: Prerelease
 
-# Builds the universal Android APK and publishes it as a GitHub *prerelease*.
+# Builds the universal Android APK, launches it on an emulator (a build that crashes on
+# start is never published), then publishes it as a GitHub *prerelease*.
 #  - Every push to ANY branch builds and publishes a prerelease
 #    (tag: v<pubspec version>-pre.<run number>)
 #  - Pushing a tag such as v0.1.0-pre.1 uses that tag instead
@@ -57,9 +58,12 @@ jobs:
       - run: android/engine-test/run_tests.sh
 
   build:
-    name: Build APK & publish prerelease
+    name: Build APK
     needs: verify
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -129,15 +133,68 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
+  smoke:
+    name: Launch on emulator
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: zipfast-apk
+          path: dist
+
+      - name: Enable KVM (hardware-accelerated emulator)
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # Installs the APK, starts the app, waits, then fails on a crash, a dead process, or if
+      # the app is not on screen. Catches launch crashes that Dart tests cannot (for example
+      # code shrinking breaking a library's startup).
+      - name: Run the app on an emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: bash .github/scripts/smoke_test.sh
+
+      - name: Keep the emulator logs and a screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-logs
+          path: smoke/*
+          if-no-files-found: ignore
+
+  publish:
+    name: Publish prerelease
+    needs: [build, smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: zipfast-apk
+          path: dist
+
       - name: Publish GitHub prerelease
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          TAG="${{ steps.meta.outputs.tag }}"
+          TAG="${{ needs.build.outputs.tag }}"
           NOTES=$(cat <<NOTE
-          **Prerelease** build of ZipFast ${{ steps.meta.outputs.version }} (CI run #${GITHUB_RUN_NUMBER}, commit ${GITHUB_SHA::7}).
+          **Prerelease** build of ZipFast ${{ needs.build.outputs.version }} (CI run #${GITHUB_RUN_NUMBER}, commit ${GITHUB_SHA::7}).
 
           - Install \`ZipFast-${TAG}-universal.apk\` (one APK for all devices).
+          - Launched successfully on an Android 14 emulator before publishing.
           - Signed with the debug key: for testing only, not for the Play Store.
           - Checksums: \`SHA256SUMS.txt\`.
           NOTE

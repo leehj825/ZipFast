@@ -37,7 +37,13 @@ android {
 
     buildTypes {
         release {
-            // R8 is on for release builds; these rules keep the JNI-visible 7-Zip classes.
+            // Code shrinking (R8) is OFF: with the ads SDK it renamed Room classes, so the
+            // WorkManager that the SDK starts at launch could not create its database and the
+            // app died before its first screen. Flutter's Gradle plugin turns minify on, so it is
+            // switched off here, after the plugin ran. The rules below still protect the
+            // JNI-visible and reflection-loaded classes if shrinking is ever re-enabled.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -84,6 +84,21 @@ def with_shadow(glyph):
     return out
 
 
+def grow(img, factor):
+    """Scale [img] about its centre, keeping the 1024 canvas."""
+    size = int(N * factor)
+    big = img.resize((size, size), Image.LANCZOS)
+    out = Image.new('RGBA', (N, N), (0, 0, 0, 0))
+    off = (N - size) // 2
+    out.alpha_composite(big, (off, off)) if off >= 0 else out.alpha_composite(big.crop((-off, -off, -off + N, -off + N)))
+    return out
+
+
+# flutter_launcher_icons insets adaptive layers by 16% per side (it keeps content in
+# the 66% safe zone itself), so the layer artwork is drawn larger by 1/0.68 to end up
+# the same size as in the legacy icon.
+ADAPTIVE_GROW = 1 / 0.68
+
 glyph = zipper()
 fg = with_shadow(glyph)
 
@@ -93,10 +108,10 @@ full.alpha_composite(fg)
 full.save(os.path.join(OUT, 'icon.png'))
 
 # Adaptive foreground: transparent, glyph only.
-fg.save(os.path.join(OUT, 'icon_foreground.png'))
+grow(fg, ADAPTIVE_GROW).save(os.path.join(OUT, 'icon_foreground.png'))
 
 # Themed (monochrome) icon: single-colour silhouette.
-zipper(mono=True).save(os.path.join(OUT, 'icon_monochrome.png'))
+grow(zipper(mono=True), ADAPTIVE_GROW).save(os.path.join(OUT, 'icon_monochrome.png'))
 
 # Play Store: 512, rounded by the store, so keep full-bleed.
 full.resize((512, 512), Image.LANCZOS).save(os.path.join(OUT, 'play_store_512.png'))

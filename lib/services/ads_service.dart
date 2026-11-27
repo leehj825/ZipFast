@@ -21,6 +21,13 @@ class AdUnits {
   /// live ads (risk of an account ban), so debug builds always show test ads.
   static const bannerTest = 'ca-app-pub-3940256099942544/6300978735';
 
+  /// The real rewarded ad unit. Not used by any screen yet: a rewarded ad needs a
+  /// clear, user-chosen reward, which is a product decision (see README, Ads).
+  static const rewardedRelease = 'ca-app-pub-4400173019354346/8092410605';
+
+  /// Google's official test rewarded unit.
+  static const rewardedTest = 'ca-app-pub-3940256099942544/5224354917';
+
   /// `--dart-define=ZIPFAST_TEST_ADS=true` makes any build use test ads. The
   /// GitHub prerelease workflow sets it: those APKs are release builds, but
   /// testers must not generate live impressions or clicks.
@@ -28,6 +35,9 @@ class AdUnits {
 
   static String banner({required bool debug}) =>
       (debug || forceTestAds) ? bannerTest : bannerRelease;
+
+  static String rewarded({required bool debug}) =>
+      (debug || forceTestAds) ? rewardedTest : rewardedRelease;
 }
 
 /// Starts the Google Mobile Ads SDK the way Google requires:

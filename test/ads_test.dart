@@ -14,6 +14,10 @@ void main() {
     expect(AdUnits.banner(debug: true), isNot(AdUnits.bannerRelease));
     expect(AdUnits.banner(debug: false), AdUnits.bannerRelease);
     expect(AdUnits.bannerTest, startsWith('ca-app-pub-3940256099942544/'));
+    // Rewarded unit: same rule, debug never touches the live unit.
+    expect(AdUnits.rewardedRelease, 'ca-app-pub-4400173019354346/8092410605');
+    expect(AdUnits.rewarded(debug: true), AdUnits.rewardedTest);
+    expect(AdUnits.rewarded(debug: false), AdUnits.rewardedRelease);
   });
 
   test('the manifest declares the same app id (the app crashes without it)', () {

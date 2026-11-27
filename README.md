@@ -61,6 +61,8 @@ which the product promises; 7-Zip does both, and also reads RAR5 and creates 7Z.
   screen only; never over dialogs, progress or archive work, and the FAB floats above it.
   App ID `ca-app-pub-4400173019354346~7131341860` (manifest meta-data, required or the app crashes at
   start); banner unit `ca-app-pub-4400173019354346/9123080380` (`lib/services/ads_service.dart`).
+* A rewarded unit (`ca-app-pub-4400173019354346/8092410605`) is stored in `AdUnits` but **not shown
+  anywhere yet**: it needs a reward the user knowingly opts into (e.g. hide the banner for 24 hours).
 * **Consent first:** the Google UMP consent form runs before the SDK initializes; no ad request is made
   until consent allows it. Where Google requires it, Settings shows **Ad privacy settings** to change the
   choice. A failed load or no consent means the banner takes no space.

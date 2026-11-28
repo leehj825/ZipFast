@@ -181,6 +181,7 @@ jobs:
           if-no-files-found: ignore
 
   publish:
+    if: false  # EXPERIMENT: do not publish
     name: Publish prerelease
     needs: [build, smoke]
     runs-on: ubuntu-latest

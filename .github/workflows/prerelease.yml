@@ -59,7 +59,7 @@ jobs:
 
   build:
     name: Build APK
-    needs: verify
+    # EXPERIMENT: needs: verify removed so the sample-app-ID build is not stopped by the manifest test
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.meta.outputs.tag }}

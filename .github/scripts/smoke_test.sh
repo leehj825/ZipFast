@@ -64,21 +64,39 @@ if ! grep -E "mResumedActivity|topResumedActivity" "$OUT/activities_crash.txt" |
 fi
 # End to end: make the running app die with an uncaught exception (`am crash`) and check that
 # the crash handler opens the report screen.
-adb shell am force-stop "$PKG"; sleep 2
-adb logcat -c
-adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null
-sleep 12
-# Target the main process by PID: `am crash <package>` may pick a helper process of the
-# package (the ads' WebView sandbox), which would not exercise the app's own handler.
-MAIN_PID=$(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}')
-echo "Crashing the main process (pid $MAIN_PID)"
-adb shell am crash "$MAIN_PID"
-sleep 10
-adb logcat -d > "$OUT/logcat_crash_drill.txt"
-adb shell dumpsys activity activities > "$OUT/activities_drill.txt" 2>/dev/null
-adb exec-out screencap -p > "$OUT/crash_drill.png" 2>/dev/null
-if ! grep -E "mResumedActivity|topResumedActivity" "$OUT/activities_drill.txt" | grep -q "CrashActivity"; then
-  echo "::error::After an uncaught exception the crash report screen was NOT shown"
+# The emulator's old Google Play services sometimes die and take dependent app processes with
+# them (not an app bug), so the drill is retried a few times with a fresh launch.
+drill() {
+  adb shell am force-stop "$PKG"; sleep 2
+  adb logcat -c
+  adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 >/dev/null
+  MAIN_PID=""
+  for _ in $(seq 1 20); do
+    MAIN_PID=$(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}')
+    [ -n "$MAIN_PID" ] && break
+    sleep 1
+  done
+  [ -z "$MAIN_PID" ] && { echo "drill: app did not start"; return 1; }
+  sleep 10
+  # Target the main process by PID: `am crash <package>` may pick a helper process of the
+  # package (the ads' WebView sandbox), which would not exercise the app's own handler.
+  MAIN_PID=$(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}')
+  [ -z "$MAIN_PID" ] && { echo "drill: app process vanished before the crash"; return 1; }
+  echo "Crashing the main process (pid $MAIN_PID)"
+  adb shell am crash "$MAIN_PID"
+  sleep 10
+  adb logcat -d > "$OUT/logcat_crash_drill.txt"
+  adb shell dumpsys activity activities > "$OUT/activities_drill.txt" 2>/dev/null
+  adb exec-out screencap -p > "$OUT/crash_drill.png" 2>/dev/null
+  adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity" | grep -q "CrashActivity"
+}
+DRILL_OK=0
+for attempt in 1 2 3; do
+  echo "Crash drill, attempt $attempt"
+  if drill; then DRILL_OK=1; break; fi
+done
+if [ "$DRILL_OK" -ne 1 ]; then
+  echo "::error::After an uncaught exception the crash report screen was NOT shown (3 attempts)"
   grep -E "AndroidRuntime|CrashActivity|$PKG" "$OUT/logcat_crash_drill.txt" | tail -40
   exit 1
 fi

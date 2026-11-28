@@ -35,7 +35,7 @@ class _Banner extends StatefulWidget {
 
 class _BannerState extends State<_Banner> {
   BannerAd? _ad;
-  AnchoredAdaptiveBannerAdSize? _size;
+  AdSize? _size;
   int? _requestedWidth;
   int _retries = 0;
   Timer? _retryTimer;
@@ -48,11 +48,17 @@ class _BannerState extends State<_Banner> {
     if (width != _requestedWidth) _load(width);
   }
 
-  Future<void> _load(int width) async {
+  /// Loads a banner. The first attempt is an anchored adaptive banner; if that fails, one
+  /// immediate attempt with the classic fixed 320x50 banner (what BatchSnap uses), which is
+  /// the most widely served size, before the slow retries start.
+  Future<void> _load(int width, {bool fixedSize = false}) async {
     _requestedWidth = width;
     _retryTimer?.cancel();
     // ignore: deprecated_member_use
-    final size = await AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait, width);
+    final AdSize? size = fixedSize
+        ? AdSize.banner
+        // ignore: deprecated_member_use
+        : await AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait, width);
     if (size == null) {
       AdsService.instance.report('Ads: no adaptive banner size for width $width');
       return;
@@ -82,6 +88,10 @@ class _BannerState extends State<_Banner> {
             if (_ad == failed) _ad = null;
             _size = null;
           });
+          if (!fixedSize) {
+            _load(_requestedWidth ?? width, fixedSize: true);
+            return;
+          }
           // A few quiet retries (no network, no fill); then give up until the next launch.
           if (_retries++ < 3) {
             _retryTimer = Timer(const Duration(seconds: 60), () {

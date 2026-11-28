@@ -17,9 +17,10 @@ class AdUnits {
   /// The real banner ad unit. Only used in release builds.
   static const bannerRelease = 'ca-app-pub-4400173019354346/9123080380';
 
-  /// Google's official test banner unit. AdMob policy forbids clicking your own
-  /// live ads (risk of an account ban), so debug builds always show test ads.
-  static const bannerTest = 'ca-app-pub-3940256099942544/6300978735';
+  /// Google's official test banner unit for ADAPTIVE banners (the fixed-size one is
+  /// `…/6300978735`). AdMob policy forbids clicking your own live ads (risk of an
+  /// account ban), so debug builds always show test ads.
+  static const bannerTest = 'ca-app-pub-3940256099942544/9214589741';
 
   /// The real rewarded ad unit. Not used by any screen yet: a rewarded ad needs a
   /// clear, user-chosen reward, which is a product decision (see README, Ads).
@@ -94,7 +95,10 @@ class AdsService {
           if (!done.isCompleted) done.complete(); // offline etc.: fall back to stored consent
         },
       );
-      await done.future;
+      // A consent form that never reports back must not block ads forever.
+      await done.future.timeout(const Duration(seconds: 15), onTimeout: () {
+        report('Ads: consent step timed out, continuing');
+      });
       await _refresh();
     } catch (e) {
       // Ads are optional; never let them break the app.

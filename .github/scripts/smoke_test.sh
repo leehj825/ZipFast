@@ -21,6 +21,10 @@ adb exec-out screencap -p > "$OUT/screen.png" 2>/dev/null
 adb shell dumpsys activity activities > "$OUT/activities.txt" 2>/dev/null
 
 FAIL=0
+echo "----- ads pipeline (from the app's own log) -----"
+grep -E "ZipFast ads" "$OUT/logcat.txt" | sed 's/^.*ZipFast ads: /ads: /' | head -20
+echo "----- Google Mobile Ads SDK log lines -----"
+grep -E " Ads |GoogleMobileAds|UserMessagingPlatform|Ad failed|Ad finished loading|Use RequestConfiguration" "$OUT/logcat.txt" | cut -c1-220 | head -25
 # Did the in-app crash report screen come up? (informational; it only appears after a crash)
 if grep -qE "Displayed $PKG/\.CrashActivity|START .*$PKG/\.CrashActivity" "$OUT/logcat.txt"; then
   echo "::notice::The crash report screen (CrashActivity) was shown after a crash"

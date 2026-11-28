@@ -61,11 +61,25 @@ class AdsService {
   /// True when the app must offer an "Ad privacy settings" entry (UMP rule).
   final ValueNotifier<bool> privacyOptionsRequired = ValueNotifier(false);
 
+  /// Human-readable state of the ads pipeline, for the "Ad status" row shown in test
+  /// builds (and the log), so "no ads" can be diagnosed without adb.
+  final ValueNotifier<String> status = ValueNotifier('Ads: not started');
+
+  void report(String message) {
+    status.value = message;
+    debugPrint('ZipFast ads: $message');
+  }
+
   bool _started = false;
 
   Future<void> initialize() async {
-    if (_started || !isSupported()) return;
+    if (_started) return;
+    if (!isSupported()) {
+      report('Ads: not supported on this platform');
+      return;
+    }
     _started = true;
+    report('Ads: asking for consent…');
     try {
       final done = Completer<void>();
       ConsentInformation.instance.requestConsentInfoUpdate(
@@ -75,14 +89,16 @@ class AdsService {
             if (!done.isCompleted) done.complete();
           });
         },
-        (_) {
+        (error) {
+          report('Ads: consent info update failed (${error.errorCode}): ${error.message}');
           if (!done.isCompleted) done.complete(); // offline etc.: fall back to stored consent
         },
       );
       await done.future;
       await _refresh();
-    } catch (_) {
+    } catch (e) {
       // Ads are optional; never let them break the app.
+      report('Ads: initialization failed: $e');
     }
   }
 
@@ -101,9 +117,14 @@ class AdsService {
     privacyOptionsRequired.value =
         await ConsentInformation.instance.getPrivacyOptionsRequirementStatus() ==
             PrivacyOptionsRequirementStatus.required;
-    if (!ready.value && await ConsentInformation.instance.canRequestAds()) {
-      await MobileAds.instance.initialize();
+    final canRequest = await ConsentInformation.instance.canRequestAds();
+    if (!ready.value && canRequest) {
+      final init = await MobileAds.instance.initialize();
+      final adapters = init.adapterStatuses.entries.map((e) => '${e.key}=${e.value.state.name}').join(', ');
       ready.value = true;
+      report('Ads: SDK initialized ($adapters)');
+    } else if (!canRequest) {
+      report('Ads: consent does not allow ad requests (privacy options required: ${privacyOptionsRequired.value})');
     }
   }
 }

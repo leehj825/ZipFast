@@ -53,10 +53,16 @@ class _BannerState extends State<_Banner> {
     _retryTimer?.cancel();
     // ignore: deprecated_member_use
     final size = await AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait, width);
-    if (!mounted || size == null || width != _requestedWidth) return;
+    if (size == null) {
+      AdsService.instance.report('Ads: no adaptive banner size for width $width');
+      return;
+    }
+    if (!mounted || width != _requestedWidth) return;
+    final unit = AdUnits.banner(debug: kDebugMode);
+    AdsService.instance.report('Ads: loading banner ${size.width}x${size.height} (${unit == AdUnits.bannerTest ? 'TEST unit' : 'live unit'})');
     final old = _ad;
     final ad = BannerAd(
-      adUnitId: AdUnits.banner(debug: kDebugMode),
+      adUnitId: unit,
       size: size,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -65,10 +71,12 @@ class _BannerState extends State<_Banner> {
             loaded.dispose();
             return;
           }
+          AdsService.instance.report('Ads: banner loaded');
           setState(() => _size = size);
         },
         onAdFailedToLoad: (failed, error) {
           failed.dispose();
+          AdsService.instance.report('Ads: banner failed to load (code ${error.code}): ${error.message}');
           if (!mounted) return;
           setState(() {
             if (_ad == failed) _ad = null;

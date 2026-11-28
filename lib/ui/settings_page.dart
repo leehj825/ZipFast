@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -139,6 +140,16 @@ class SettingsPage extends StatelessWidget {
                 .showSnackBar(SnackBar(content: Text(l10n.cacheCleared)));
           },
         ),
+        // Test builds only: why is there no ad?
+        if (kDebugMode || AdUnits.forceTestAds)
+          ValueListenableBuilder<String>(
+            valueListenable: AdsService.instance.status,
+            builder: (context, status, _) => ListTile(
+              leading: const Icon(Icons.campaign_outlined),
+              title: const Text('Ad status (test builds only)'),
+              subtitle: SelectableText(status),
+            ),
+          ),
         ValueListenableBuilder<bool>(
           valueListenable: AdsService.instance.privacyOptionsRequired,
           builder: (context, required, _) => required

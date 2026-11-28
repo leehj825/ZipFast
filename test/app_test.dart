@@ -28,7 +28,7 @@ void main() {
     await pumpApp(tester, locale: 'en');
     expect(find.text('ZipFast'), findsOneWidget);
     expect(find.text('Recent archives'), findsOneWidget);
-    expect(find.text('Browse device'), findsOneWidget);
+    expect(find.text('Files'), findsOneWidget);
     expect(find.text('Create archive'), findsOneWidget);
     expect(find.text('Extract archive'), findsOneWidget);
     expect(find.text('Open archive'), findsOneWidget);
@@ -37,7 +37,7 @@ void main() {
   testWidgets('home screen renders in Korean', (tester) async {
     await pumpApp(tester, locale: 'ko');
     expect(find.text('최근 압축 파일'), findsOneWidget);
-    expect(find.text('기기 폴더 탐색'), findsOneWidget);
+    expect(find.text('파일'), findsOneWidget);
     expect(find.text('압축하기'), findsOneWidget);
     expect(find.text('압축 풀기'), findsOneWidget);
     expect(find.text('압축 파일 열기'), findsOneWidget);
@@ -53,5 +53,19 @@ void main() {
     await tester.tap(find.text('한국어'));
     await tester.pumpAndSettle();
     expect(find.text('언어'), findsOneWidget);
+  });
+
+  testWidgets('settings: location options are shown and "ask every time" toggles', (tester) async {
+    await pumpApp(tester, locale: 'en');
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+    expect(find.text('Default extract folder'), findsOneWidget);
+    expect(find.text('New folder next to the archive'), findsOneWidget);
+    expect(find.text('Default save folder for new archives'), findsOneWidget);
+    expect(find.text('ZipFast storage'), findsOneWidget);
+    await tester.tap(find.text('Ask for a folder every time'));
+    await tester.pumpAndSettle();
+    final sw = tester.widget<SwitchListTile>(find.widgetWithText(SwitchListTile, 'Ask for a folder every time'));
+    expect(sw.value, isTrue);
   });
 }

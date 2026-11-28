@@ -46,7 +46,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get tabRecent => '최근 압축 파일';
 
   @override
-  String get tabBrowse => '기기 폴더 탐색';
+  String get tabBrowse => '파일';
 
   @override
   String recentArchivesTitle(int count) {
@@ -339,6 +339,150 @@ class AppLocalizationsKo extends AppLocalizations {
   String get splitVolumesNote => '볼륨 이름은 .001, .002, … 입니다. 풀 때는 .001 파일을 여세요.';
 
   @override
+  String get extractLocation => '기본 압축 해제 폴더';
+
+  @override
+  String get extractLocationNextTo => '압축 파일 옆의 새 폴더';
+
+  @override
+  String get saveLocation => '새 압축 파일 기본 저장 폴더';
+
+  @override
+  String get saveLocationApp => 'ZipFast 저장소';
+
+  @override
+  String get chooseFolder => '폴더 선택…';
+
+  @override
+  String get resetToDefault => '기본값으로 되돌리기';
+
+  @override
+  String get change => '변경';
+
+  @override
+  String get saveTo => '저장 위치';
+
+  @override
+  String get createSubfolder => '새 폴더에 넣기';
+
+  @override
+  String get askEveryTime => '매번 폴더 묻기';
+
+  @override
+  String get askEveryTimeSub => '압축을 풀거나 만들 때마다 위치를 선택합니다';
+
+  @override
+  String get storageRoot => 'ZipFast 저장소';
+
+  @override
+  String get newFolder => '새 폴더';
+
+  @override
+  String get folderName => '폴더 이름';
+
+  @override
+  String get rename => '이름 변경';
+
+  @override
+  String get newName => '새 이름';
+
+  @override
+  String get moveTo => '이동…';
+
+  @override
+  String get moveHere => '여기로 이동';
+
+  @override
+  String get useThisFolder => '이 폴더 사용';
+
+  @override
+  String get chooseDestination => '폴더 선택';
+
+  @override
+  String get shareAction => '공유';
+
+  @override
+  String get shareFoldersNote => '폴더는 공유할 수 없습니다. 먼저 압축하세요.';
+
+  @override
+  String get openWith => '다른 앱으로 열기';
+
+  @override
+  String get noAppToOpen => '이 파일을 열 수 있는 앱이 없습니다.';
+
+  @override
+  String deleteConfirmTitle(int count) {
+    return '$count개 항목을 삭제할까요?';
+  }
+
+  @override
+  String get deleteConfirmBody => '되돌릴 수 없습니다.';
+
+  @override
+  String get opNameInvalid => '사용할 수 없는 이름입니다.';
+
+  @override
+  String get opNameTaken => '같은 이름이 이미 있습니다.';
+
+  @override
+  String get opIntoItself => '폴더를 자기 자신 안으로 옮길 수 없습니다.';
+
+  @override
+  String get opFailed => '작업에 실패했습니다.';
+
+  @override
+  String get showFiles => '파일 보기';
+
+  @override
+  String selectedCount(int count) {
+    return '$count개 선택됨';
+  }
+
+  @override
+  String get refresh => '새로고침';
+
+  @override
+  String get storageHint =>
+      '결과는 ZipFast 자체 폴더에 저장됩니다. 다른 앱에서 쓰려면 파일을 열거나 공유하세요.';
+
+  @override
+  String get saveCopyTo => '다른 위치에 저장…';
+
+  @override
+  String saveCopyHere(String folder) {
+    return '$folder에 저장';
+  }
+
+  @override
+  String get chooseAnotherFolder => '다른 폴더 선택…';
+
+  @override
+  String get copying => '복사하는 중…';
+
+  @override
+  String get copyDoneTitle => '복사 완료';
+
+  @override
+  String copiedSummary(int count, String folder) {
+    return '파일 $count개를 아래 폴더에 복사했습니다\n$folder';
+  }
+
+  @override
+  String get exportUnavailable => '이 환경에서는 다른 폴더에 저장할 수 없습니다.';
+
+  @override
+  String get exportAccessLost => '해당 폴더에 대한 접근이 해제되었습니다. 다시 선택하세요.';
+
+  @override
+  String get exportNothing => '복사할 항목이 없습니다.';
+
+  @override
+  String get adPrivacy => '광고 개인정보 설정';
+
+  @override
+  String get adPrivacySub => '광고 동의 선택을 확인하거나 변경합니다';
+
+  @override
   String get settingsTitle => '설정';
 
   @override
@@ -375,7 +519,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get about => '정보';
 
   @override
-  String get privacy => '100% 오프라인입니다. 파일은 기기 밖으로 전송되지 않습니다.';
+  String get privacy =>
+      '압축 처리는 오프라인으로 이루어지며 파일은 기기 밖으로 전송되지 않습니다. 광고 배너만 인터넷을 사용합니다.';
 
   @override
   String version(String version) {

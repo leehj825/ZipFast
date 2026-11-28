@@ -6,9 +6,13 @@ import 'package:provider/provider.dart';
 
 import '../engine/composite_engine.dart';
 import '../engine/models.dart';
-import '../engine/safe_path.dart';
 import '../l10n/gen/app_localizations.dart';
+import '../services/external_file_service.dart';
 import '../state/app_state.dart';
+import '../state/destinations.dart';
+import '../state/file_ops.dart';
+import 'actions.dart';
+import 'export_flow.dart';
 import '../state/storage_service.dart';
 import 'widgets/job_dialog.dart';
 
@@ -46,6 +50,7 @@ class _CreateSheetState extends State<_CreateSheet> {
   int _splitMb = 25;
   bool _customSplit = false;
   final _customController = TextEditingController();
+  late String? _saveDir = context.read<AppState>().createDir;
 
   @override
   void dispose() {
@@ -68,23 +73,28 @@ class _CreateSheetState extends State<_CreateSheet> {
     final storage = context.read<StorageService>();
     final navigator = Navigator.of(context);
     final parentContext = widget.parentContext;
+    final messenger = ScaffoldMessenger.of(parentContext);
     final history = parentContext.read<AppState>();
+    final appState = history;
 
     var base = _name.text.trim();
     if (base.isEmpty) base = 'Archive';
     base = base.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-    Directory(storage.createRoot).createSync(recursive: true);
-    final output = uniquePath(
-      p.join(storage.createRoot, '$base$_extension'),
-      (s) => FileSystemEntity.typeSync(s, followLinks: false) != FileSystemEntityType.notFound,
-    );
+    var folder = _saveDir;
+    if (appState.askEachTime) {
+      // "Ask every time": choose the folder now.
+      folder = await pickAppFolder(context);
+      if (folder == null || !mounted) return;
+    }
+    if (folder != null && !StorageService.isWritable(folder)) folder = null;
+    final output = resolveCreatePath(storage, fileName: '$base$_extension', dir: folder);
+    Directory(p.dirname(output)).createSync(recursive: true);
     final usePassword = _encrypt && _canEncrypt && _password.text.isNotEmpty;
 
     var splitMb = _splitMb;
     if (_split && _customSplit) splitMb = int.tryParse(_customController.text.trim()) ?? 0;
     if (_split && splitMb < 1) {
-      ScaffoldMessenger.of(widget.parentContext)
-          .showSnackBar(SnackBar(content: Text(l10n.splitTooSmall)));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.splitTooSmall)));
       return;
     }
 
@@ -98,12 +108,37 @@ class _CreateSheetState extends State<_CreateSheet> {
       tempDir: storage.tempDir,
     ));
     navigator.pop();
+    if (!parentContext.mounted) return;
     final result = await showJobDialog<String>(
       parentContext,
       handle,
       title: l10n.creating,
       doneTitle: l10n.createdTitle,
-      doneBuilder: (ctx, path) => Text(l10n.createdSummary(path)),
+      doneBuilder: (ctx, path) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.createdSummary(path)),
+          const SizedBox(height: 8),
+          Wrap(spacing: 8, children: [
+            TextButton.icon(
+              onPressed: () => ExternalFileService.share(volumeSet(path)),
+              icon: const Icon(Icons.share_outlined, size: 18),
+              label: Text(l10n.shareAction),
+            ),
+            TextButton.icon(
+              onPressed: () => saveCopyTo(ctx, volumeSet(path)),
+              icon: const Icon(Icons.save_alt, size: 18),
+              label: Text(l10n.saveCopyTo),
+            ),
+            TextButton.icon(
+              onPressed: () => showFilesIn(ctx, path),
+              icon: const Icon(Icons.folder_open, size: 18),
+              label: Text(l10n.showFiles),
+            ),
+          ]),
+        ],
+      ),
     );
     if (result != null) await history.addToHistory(result);
   }
@@ -133,7 +168,28 @@ class _CreateSheetState extends State<_CreateSheet> {
                   border: const OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                leading: const Icon(Icons.folder_outlined),
+                title: Text(l10n.saveTo),
+                subtitle: Text(
+                  context.watch<AppState>().askEachTime
+                      ? l10n.askEveryTime
+                      : (_saveDir ?? l10n.saveLocationApp),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: TextButton(
+                  onPressed: () async {
+                    final dir = await pickAppFolder(context);
+                    if (dir != null && mounted) setState(() => _saveDir = dir);
+                  },
+                  child: Text(l10n.change),
+                ),
+              ),
+              const SizedBox(height: 8),
               Text(l10n.format, style: theme.textTheme.labelLarge),
               const SizedBox(height: 8),
               SegmentedButton<CreateFormat>(

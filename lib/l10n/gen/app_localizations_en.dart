@@ -46,7 +46,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabRecent => 'Recent archives';
 
   @override
-  String get tabBrowse => 'Browse device';
+  String get tabBrowse => 'Files';
 
   @override
   String recentArchivesTitle(int count) {
@@ -343,6 +343,154 @@ class AppLocalizationsEn extends AppLocalizations {
       'Volumes are named .001, .002, … Open the .001 file to extract.';
 
   @override
+  String get extractLocation => 'Default extract folder';
+
+  @override
+  String get extractLocationNextTo => 'New folder next to the archive';
+
+  @override
+  String get saveLocation => 'Default save folder for new archives';
+
+  @override
+  String get saveLocationApp => 'ZipFast storage';
+
+  @override
+  String get chooseFolder => 'Choose folder…';
+
+  @override
+  String get resetToDefault => 'Reset to default';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get saveTo => 'Save to';
+
+  @override
+  String get createSubfolder => 'Put files in a new folder';
+
+  @override
+  String get askEveryTime => 'Ask for a folder every time';
+
+  @override
+  String get askEveryTimeSub =>
+      'Pick the destination each time you extract or create';
+
+  @override
+  String get storageRoot => 'ZipFast storage';
+
+  @override
+  String get newFolder => 'New folder';
+
+  @override
+  String get folderName => 'Folder name';
+
+  @override
+  String get rename => 'Rename';
+
+  @override
+  String get newName => 'New name';
+
+  @override
+  String get moveTo => 'Move to…';
+
+  @override
+  String get moveHere => 'Move here';
+
+  @override
+  String get useThisFolder => 'Use this folder';
+
+  @override
+  String get chooseDestination => 'Choose a folder';
+
+  @override
+  String get shareAction => 'Share';
+
+  @override
+  String get shareFoldersNote =>
+      'Folders can’t be shared. Compress them first.';
+
+  @override
+  String get openWith => 'Open with…';
+
+  @override
+  String get noAppToOpen => 'No app can open this file.';
+
+  @override
+  String deleteConfirmTitle(int count) {
+    return 'Delete $count items?';
+  }
+
+  @override
+  String get deleteConfirmBody => 'This can’t be undone.';
+
+  @override
+  String get opNameInvalid => 'That name isn’t allowed.';
+
+  @override
+  String get opNameTaken => 'Something with that name already exists.';
+
+  @override
+  String get opIntoItself => 'A folder can’t be moved into itself.';
+
+  @override
+  String get opFailed => 'The operation failed.';
+
+  @override
+  String get showFiles => 'Show files';
+
+  @override
+  String selectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get storageHint =>
+      'Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.';
+
+  @override
+  String get saveCopyTo => 'Save a copy to…';
+
+  @override
+  String saveCopyHere(String folder) {
+    return 'Save to $folder';
+  }
+
+  @override
+  String get chooseAnotherFolder => 'Choose another folder…';
+
+  @override
+  String get copying => 'Copying…';
+
+  @override
+  String get copyDoneTitle => 'Copy complete';
+
+  @override
+  String copiedSummary(int count, String folder) {
+    return '$count files copied to\n$folder';
+  }
+
+  @override
+  String get exportUnavailable =>
+      'Saving to another folder isn’t available here.';
+
+  @override
+  String get exportAccessLost =>
+      'Access to that folder was removed. Choose it again.';
+
+  @override
+  String get exportNothing => 'Nothing to copy.';
+
+  @override
+  String get adPrivacy => 'Ad privacy settings';
+
+  @override
+  String get adPrivacySub => 'Review or change your ad consent choices';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
@@ -379,7 +527,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about => 'About';
 
   @override
-  String get privacy => '100% offline. Your files never leave this device.';
+  String get privacy =>
+      'Archives are processed offline; your files never leave this device. Only the ad banner uses the internet.';
 
   @override
   String version(String version) {

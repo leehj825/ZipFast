@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +6,8 @@ import '../engine/models.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
+import '../services/ads_service.dart';
+import 'actions.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -87,6 +90,47 @@ class SettingsPage extends StatelessWidget {
             if (c != null) state.setDefaultConflict(c);
           },
         ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.unarchive_outlined),
+          title: Text(l10n.extractLocation),
+          subtitle: Text(state.extractDir ?? l10n.extractLocationNextTo),
+          trailing: state.extractDir == null
+              ? null
+              : IconButton(
+                  tooltip: l10n.resetToDefault,
+                  icon: const Icon(Icons.restart_alt),
+                  onPressed: () => state.setExtractDir(null),
+                ),
+          onTap: () async {
+            final dir = await pickAppFolder(context);
+            if (dir != null) state.setExtractDir(dir);
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.archive_outlined),
+          title: Text(l10n.saveLocation),
+          subtitle: Text(state.createDir ?? l10n.saveLocationApp),
+          trailing: state.createDir == null
+              ? null
+              : IconButton(
+                  tooltip: l10n.resetToDefault,
+                  icon: const Icon(Icons.restart_alt),
+                  onPressed: () => state.setCreateDir(null),
+                ),
+          onTap: () async {
+            final dir = await pickAppFolder(context);
+            if (dir != null) state.setCreateDir(dir);
+          },
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.help_outline),
+          title: Text(l10n.askEveryTime),
+          subtitle: Text(l10n.askEveryTimeSub),
+          value: state.askEachTime,
+          onChanged: state.setAskEachTime,
+        ),
+        const Divider(),
         ListTile(
           leading: const Icon(Icons.cleaning_services_outlined),
           title: Text(l10n.clearCache),
@@ -95,6 +139,27 @@ class SettingsPage extends StatelessWidget {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(l10n.cacheCleared)));
           },
+        ),
+        // Test builds only: why is there no ad?
+        if (kDebugMode || AdUnits.forceTestAds)
+          ValueListenableBuilder<String>(
+            valueListenable: AdsService.instance.status,
+            builder: (context, status, _) => ListTile(
+              leading: const Icon(Icons.campaign_outlined),
+              title: const Text('Ad status (test builds only)'),
+              subtitle: SelectableText(status),
+            ),
+          ),
+        ValueListenableBuilder<bool>(
+          valueListenable: AdsService.instance.privacyOptionsRequired,
+          builder: (context, required, _) => required
+              ? ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: Text(l10n.adPrivacy),
+                  subtitle: Text(l10n.adPrivacySub),
+                  onTap: AdsService.instance.showPrivacyOptions,
+                )
+              : const SizedBox.shrink(),
         ),
         const Divider(),
         ListTile(

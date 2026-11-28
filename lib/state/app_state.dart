@@ -18,12 +18,20 @@ class AppState extends ChangeNotifier {
       orElse: () => ConflictPolicy.rename,
     );
     _history = _decodeHistory(_prefs.getString(_kHistory));
+    _extractDir = _prefs.getString(_kExtractDir);
+    _createDir = _prefs.getString(_kCreateDir);
+    _askEachTime = _prefs.getBool(_kAsk) ?? false;
+    _exportUri = _prefs.getString(_kExportUri);
   }
 
   static const _kTheme = 'theme_mode';
   static const _kLocale = 'locale';
   static const _kConflict = 'conflict_policy';
   static const _kHistory = 'history';
+  static const _kExtractDir = 'extract_dir';
+  static const _kCreateDir = 'create_dir';
+  static const _kAsk = 'ask_each_time';
+  static const _kExportUri = 'export_uri';
   static const maxHistory = 50;
 
   final SharedPreferences _prefs;
@@ -32,6 +40,10 @@ class AppState extends ChangeNotifier {
   String? _localeCode;
   late ConflictPolicy _conflict;
   late List<String> _history;
+  String? _extractDir;
+  String? _createDir;
+  late bool _askEachTime;
+  String? _exportUri;
 
   ThemeMode get themeMode => _themeMode;
 
@@ -43,6 +55,40 @@ class AppState extends ChangeNotifier {
 
   /// Paths of archives the user opened recently, newest first.
   List<String> get history => List.unmodifiable(_history);
+
+  /// Default folder for extraction; `null` means a new folder next to the archive.
+  String? get extractDir => _extractDir;
+
+  /// Default folder for new archives; `null` means the app's own storage.
+  String? get createDir => _createDir;
+
+  /// Whether to ask for a folder every time an archive is extracted or created.
+  bool get askEachTime => _askEachTime;
+
+  Future<void> setExtractDir(String? dir) => _setString(_kExtractDir, dir, (v) => _extractDir = v);
+
+  Future<void> setCreateDir(String? dir) => _setString(_kCreateDir, dir, (v) => _createDir = v);
+
+  /// Folder (a `content://` tree URI) last chosen for "Save a copy to…".
+  String? get exportUri => _exportUri;
+
+  Future<void> setExportUri(String? uri) => _setString(_kExportUri, uri, (v) => _exportUri = v);
+
+  Future<void> setAskEachTime(bool value) async {
+    _askEachTime = value;
+    notifyListeners();
+    await _prefs.setBool(_kAsk, value);
+  }
+
+  Future<void> _setString(String key, String? value, void Function(String?) assign) async {
+    assign(value);
+    notifyListeners();
+    if (value == null) {
+      await _prefs.remove(key);
+    } else {
+      await _prefs.setString(key, value);
+    }
+  }
 
   Future<void> setThemeMode(ThemeMode mode) async {
     _themeMode = mode;

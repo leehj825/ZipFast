@@ -22,6 +22,7 @@ import kotlin.concurrent.thread
 class MainActivity : FlutterActivity() {
     private var channel: MethodChannel? = null
     private var enginePlugin: EnginePlugin? = null
+    private var exportPlugin: ExportPlugin? = null
     private val mainHandler = Handler(Looper.getMainLooper())
 
     // Result of the launch intent, or a Dart request waiting for it.
@@ -32,6 +33,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         enginePlugin = EnginePlugin(flutterEngine.dartExecutor.binaryMessenger)
+        exportPlugin = ExportPlugin(this, flutterEngine.dartExecutor.binaryMessenger)
         val ch = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "com.zipfast.zipfast/incoming"
@@ -58,6 +60,12 @@ class MainActivity : FlutterActivity() {
                 pendingResult = null
             }
         }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (exportPlugin?.onActivityResult(requestCode, resultCode, data) == true) return
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onNewIntent(intent: Intent) {

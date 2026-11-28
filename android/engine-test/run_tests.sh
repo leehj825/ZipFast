@@ -11,5 +11,6 @@ for a in sevenzipjbinding sevenzipjbinding-linux-amd64; do
 done
 [ -d fixtures ] || python3 make_fixtures.py
 CP="$LIB/sevenzipjbinding-$V.jar:$LIB/sevenzipjbinding-linux-amd64-$V.jar"
-javac -nowarn -cp "$CP" -d .out ../app/src/main/java/com/zipfast/zipfast/engine/*.java BridgeTest.java
+javac -nowarn -cp "$CP" -d .out ../app/src/main/java/com/zipfast/zipfast/engine/*.java BridgeTest.java ExportTest.java
 java -cp ".out:$CP" BridgeTest fixtures
+java -cp ".out:$CP" ExportTest

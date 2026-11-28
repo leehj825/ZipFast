@@ -1,22 +1,18 @@
-// ignore_for_file: deprecated_member_use
-import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import '../encoding/name_encoding.dart';
 import '../engine/composite_engine.dart';
 import '../engine/models.dart';
-import '../engine/safe_path.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../state/app_state.dart';
+import '../state/destinations.dart';
 import '../state/storage_service.dart';
+import 'actions.dart';
+import 'export_flow.dart';
 import 'widgets/job_dialog.dart';
-
-enum _Destination { newFolder, sameFolder, custom }
 
 /// Bottom sheet with extraction options, followed by the progress dialog.
 Future<void> showExtractSheet(
@@ -63,8 +59,10 @@ class _ExtractSheet extends StatefulWidget {
 }
 
 class _ExtractSheetState extends State<_ExtractSheet> {
-  _Destination _dest = _Destination.newFolder;
-  String? _customDir;
+  late ExtractTarget _dest =
+      _customDir == null ? ExtractTarget.newFolder : ExtractTarget.custom;
+  late String? _customDir = context.read<AppState>().extractDir;
+  bool _subfolder = true;
   late ConflictPolicy _conflict = context.read<AppState>().defaultConflict;
   late final TextEditingController _password =
       TextEditingController(text: widget.password ?? '');
@@ -77,39 +75,47 @@ class _ExtractSheetState extends State<_ExtractSheet> {
   }
 
   Future<void> _pickCustom() async {
-    final dir = await FilePicker.getDirectoryPath();
-    if (dir != null) setState(() => _customDir = dir);
+    final dir = await pickAppFolder(context);
+    if (dir != null && mounted) {
+      setState(() {
+        _customDir = dir;
+        _dest = ExtractTarget.custom;
+      });
+    }
   }
 
   Future<void> _start() async {
     final l10n = AppLocalizations.of(context);
     final storage = context.read<StorageService>();
+    final askEachTime = context.read<AppState>().askEachTime;
     final messenger = ScaffoldMessenger.of(widget.parentContext);
     final navigator = Navigator.of(context);
     final parentContext = widget.parentContext;
 
-    final baseName = archiveBaseName(p.basename(widget.archivePath));
-    String destination;
-    var fellBack = false;
-    switch (_dest) {
-      case _Destination.newFolder:
-        final r = storage.extractParentFor(widget.archivePath);
-        fellBack = r.usedFallback;
-        destination = uniquePath(p.join(r.parent, baseName),
-            (s) => _exists(s));
-      case _Destination.sameFolder:
-        final r = storage.extractParentFor(widget.archivePath);
-        fellBack = r.usedFallback;
-        destination = fellBack ? p.join(r.parent, baseName) : r.parent;
-      case _Destination.custom:
-        final dir = _customDir;
-        if (dir != null && StorageService.isWritable(dir)) {
-          destination = dir;
-        } else {
-          destination = p.join(storage.fallbackExtractRoot, baseName);
-          fellBack = true;
-        }
+    // "Ask every time": choose the folder now.
+    var target = _dest;
+    var customDir = _customDir;
+    if (askEachTime) {
+      final dir = await pickAppFolder(context);
+      if (dir == null || !mounted) return;
+      target = ExtractTarget.custom;
+      customDir = dir;
     }
+    if (target == ExtractTarget.custom && customDir == null) {
+      await _pickCustom();
+      if (_customDir == null || !mounted) return;
+      customDir = _customDir;
+    }
+
+    final resolved = resolveExtractDestination(
+      storage,
+      target: target,
+      archivePath: widget.archivePath,
+      customDir: customDir,
+      customSubfolder: _subfolder,
+    );
+    final destination = resolved.path;
+    final fellBack = resolved.usedFallback;
 
     final request = ExtractRequest(
       archivePath: widget.archivePath,
@@ -125,6 +131,7 @@ class _ExtractSheetState extends State<_ExtractSheet> {
     if (fellBack) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.destFallbackNote)));
     }
+    if (!parentContext.mounted) return;
     final handle = appEngine.extract(request);
     await showJobDialog<ExtractResult>(
       parentContext,
@@ -139,8 +146,8 @@ class _ExtractSheetState extends State<_ExtractSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    Widget radio(_Destination value, String label, {Widget? trailing}) {
-      return RadioListTile<_Destination>(
+    Widget radio(ExtractTarget value, String label, {Widget? trailing}) {
+      return RadioListTile<ExtractTarget>(
         value: value,
         title: Text(label),
         subtitle: trailing,
@@ -161,22 +168,39 @@ class _ExtractSheetState extends State<_ExtractSheet> {
               Text(l10n.extractTitle, style: theme.textTheme.titleLarge),
               const SizedBox(height: 16),
               Text(l10n.destination, style: theme.textTheme.labelLarge),
-              RadioGroup<_Destination>(
+              RadioGroup<ExtractTarget>(
                 groupValue: _dest,
                 onChanged: (v) {
                   setState(() => _dest = v!);
-                  if (v == _Destination.custom && _customDir == null) _pickCustom();
+                  if (v == ExtractTarget.custom && _customDir == null) _pickCustom();
                 },
                 child: Column(children: [
-                  radio(_Destination.newFolder, l10n.destNewFolder),
-                  radio(_Destination.sameFolder, l10n.destSameFolder),
+                  radio(ExtractTarget.newFolder, l10n.destNewFolder),
+                  radio(ExtractTarget.sameFolder, l10n.destSameFolder),
                   radio(
-                    _Destination.custom,
+                    ExtractTarget.custom,
                     l10n.destCustom,
                     trailing: _customDir == null ? null : Text(_customDir!),
                   ),
                 ]),
               ),
+              if (_dest == ExtractTarget.custom) ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _pickCustom,
+                    icon: const Icon(Icons.folder_open, size: 18),
+                    label: Text(l10n.change),
+                  ),
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: Text(l10n.createSubfolder),
+                  value: _subfolder,
+                  onChanged: (v) => setState(() => _subfolder = v),
+                ),
+              ],
               if (widget.listing.hasEncrypted) ...[
                 const SizedBox(height: 8),
                 TextField(
@@ -220,9 +244,6 @@ class _ExtractSheetState extends State<_ExtractSheet> {
   }
 }
 
-bool _exists(String path) =>
-    FileSystemEntity.typeSync(path, followLinks: false) != FileSystemEntityType.notFound;
-
 class _ExtractSummary extends StatelessWidget {
   const _ExtractSummary({required this.result});
   final ExtractResult result;
@@ -245,6 +266,16 @@ class _ExtractSummary extends StatelessWidget {
           Text(l10n.skippedNote(result.skipped)),
         ],
         const SizedBox(height: 8),
+        TextButton.icon(
+          onPressed: () => saveCopyTo(context, [result.destinationDir]),
+          icon: const Icon(Icons.save_alt, size: 18),
+          label: Text(l10n.saveCopyTo),
+        ),
+        TextButton.icon(
+          onPressed: () => showFilesIn(context, result.destinationDir),
+          icon: const Icon(Icons.folder_open, size: 18),
+          label: Text(l10n.showFiles),
+        ),
         TextButton.icon(
           onPressed: () async {
             await Clipboard.setData(ClipboardData(text: result.destinationDir));

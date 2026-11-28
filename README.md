@@ -19,10 +19,18 @@ Everything is free: there is no Pro tier, no purchase, and no feature gating.
 | Partial extraction | Check files/folders in the viewer, extract only those |
 | Previews | Images and text, read straight from the archive |
 | Create | ZIP, 7Z, TAR.GZ; 4 compression levels; AES-256 password (ZIP, 7Z); split into volumes (10 / 25 / 100 MB or custom) |
+| Files | In-app file manager for ZipFast's folder: open, share, rename, move, delete, new folder; choose extract / save folder per job, set defaults, or be asked every time |
 | Safety | Zip Slip / path-traversal blocked in both engines, symlinks never created |
 | Big files | Streamed from disk, background work, cancellable |
 | "Open with ZipFast" | Android intent filters + `MainActivity` hand-off |
 | i18n | English + Korean (`lib/l10n/app_*.arb`) |
+
+## Startup safety
+
+`main()` opens the app immediately (`ZipFastBoot`, `lib/boot.dart`): a splash while settings, folders and
+ads consent load. If any startup step fails it shows an error screen with the exception and stack (with
+*Retry* and *Copy*) instead of a dead app, and every `path_provider` lookup has a fallback. Uncaught async
+errors are logged (`adb logcat | grep ZipFast`).
 
 ## Two engines
 
@@ -52,17 +60,50 @@ which the product promises; 7-Zip does both, and also reads RAR5 and creates 7Z.
   fixtures, so tests use hand-built stored RAR4/RAR5 files.
 * Filename-encoding repair only exists for ZIP (7Z names are Unicode; RAR names are rarely mis-encoded).
 * Foreground service / notification progress for long jobs; PDF preview; batch extraction.
-* Ads: `AdBannerSlot` is where an AdMob banner goes; it shows a placeholder in debug builds and nothing
-  in release.
+* Ads: see **Ads** below (Android code unverified, like the rest).
 
-## Storage model
+## Ads (AdMob banner)
 
-Google Play restricts all-files access, so ZipFast requests no broad storage
-permission. Files come in through the system picker or "Open with". Extraction
-goes next to the archive when that folder is writable and durable, otherwise to
-the app's own storage (`Android/data/<app>/files/Extracted`), and the app says
-so. The "Browse device" tab and the recent-files scan degrade to an explanatory
-empty state when Android denies directory listing.
+* Google Mobile Ads SDK (`google_mobile_ads`), one **anchored adaptive banner** at the bottom of the home
+  screen only; never over dialogs, progress or archive work, and the FAB floats above it.
+  App ID `ca-app-pub-4400173019354346~7131341860` (manifest meta-data, required or the app crashes at
+  start); banner unit `ca-app-pub-4400173019354346/9123080380` (`lib/services/ads_service.dart`).
+* A rewarded unit (`ca-app-pub-4400173019354346/8092410605`) is stored in `AdUnits` but **not shown
+  anywhere yet**: it needs a reward the user knowingly opts into (e.g. hide the banner for 24 hours).
+* **Consent first:** the Google UMP consent form runs before the SDK initializes; no ad request is made
+  until consent allows it. Where Google requires it, Settings shows **Ad privacy settings** to change the
+  choice. A failed load or no consent means the banner takes no space.
+* **Test ads outside the store:** debug builds and any build with `--dart-define=ZIPFAST_TEST_ADS=true`
+  (the GitHub prerelease workflow) use Google's test unit. Clicking your own live ads can get an AdMob
+  account banned. A Play build is made without that define so it uses the live unit.
+* Before a Play release: declare ads and the advertising ID in **Data safety**, answer the *Ads* and
+  *Target audience* (not child-directed) forms, and host `app-ads.txt` on the developer website. The
+  plugin adds the `AD_ID` permission. The INTERNET permission exists only for ads; archives never use it.
+
+## Where files live, and getting them out
+
+ZipFast keeps results in **its own storage folder** (`Android/data/<app>/files`), so it needs no broad
+storage permission and works the same on every Android version (and passes Google Play policy).
+Other apps cannot read that folder directly, so the app includes a file manager and ways out:
+
+* **Files tab** (also opened by **Show files** after an extract / create): browse the folder, open an
+  archive in ZipFast, open any other file in another app, **share** files through the system share sheet,
+  rename, move (in-app folder picker), delete, create folders, multi-select, and compress a selection.
+  Everything is confined to the storage folder (guarded and tested in `lib/state/file_ops.dart`).
+* **Choosing where to extract / save:** the extract sheet offers *new folder next to the archive*
+  (falls back to app storage if that folder isn't writable), *same folder*, or *choose folder* in the
+  in-app picker (with an optional new subfolder). The create sheet has a *Save to* row. In Settings you
+  can set a default extract folder and a default save folder, or turn on **Ask for a folder every time**.
+* **Save a copy to…** (Files tab selection bar, and the buttons after extract / create) copies files or
+  folders to any folder you pick with Android's system folder picker (Storage Access Framework). No
+  permission is declared: choosing the folder is the grant, and ZipFast remembers it, offering it as a
+  one-tap choice next time (and asking again if Android revoked it). Android 11+ does not let apps be
+  granted the storage root, `Download` itself, or `Android/data`; pick a subfolder (e.g. `Download/Unpacked`).
+  The copy logic (`TreeExporter.java`: recursion, progress, cancel, MIME types, name cleaning, symlinks
+  skipped) is unit-tested on the host JVM; the thin `DocumentsContract` adapter in `ExportPlugin.kt` is not
+  compiled here. Split archives are copied and shared as the whole `.001`, `.002`, ... set.
+* `open_filex` and `share_plus` provide the FileProvider plumbing for open/share. Like the rest of the
+  Android side, it has not been built or run on a device here.
 
 ## Project layout
 
@@ -101,6 +142,8 @@ and builds fixtures with `pip install py7zr pycdlib`:
 ```sh
 android/engine-test/run_tests.sh
 ```
+
+That script also tests `TreeExporter` (the "Save a copy to…" copy logic).
 
 Regenerating data files:
 

@@ -16,7 +16,18 @@ String fixture(String name) => p.join('test', 'fixtures', name);
 void main() {
   late Directory tmp;
   setUp(() => tmp = Directory.systemTemp.createTempSync('zipfast_test_'));
-  tearDown(() => tmp.deleteSync(recursive: true));
+  // A cancelled job's isolate is killed asynchronously and may still be touching
+  // files for a moment, so deleting the folder can race with it. Retry.
+  tearDown(() async {
+    for (var i = 0; i < 20; i++) {
+      try {
+        if (tmp.existsSync()) tmp.deleteSync(recursive: true);
+        return;
+      } on FileSystemException {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+    }
+  });
 
   group('safe path (Zip Slip)', () {
     test('rejects traversal and absolute names', () {
@@ -213,6 +224,8 @@ void main() {
       tempDir: tmp.path,
     ));
     job.cancel();
-    expect(job.result, throwsA(isA<JobCancelledException>()));
+    await expectLater(job.result, throwsA(isA<JobCancelledException>()));
+    // Give the killed isolate a moment to disappear before the folder is removed.
+    await Future<void>.delayed(const Duration(milliseconds: 300));
   });
 }

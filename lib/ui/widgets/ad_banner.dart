@@ -1,35 +1,132 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../../l10n/gen/app_localizations.dart';
+import '../../services/ads_service.dart';
 
-/// Home-screen banner slot.
+/// The home-screen banner: an anchored adaptive AdMob banner at the bottom.
 ///
-/// This is the single integration point for an adaptive AdMob banner
-/// (`google_mobile_ads`). Until that is wired in, debug builds show a labelled
-/// placeholder so the layout can be checked, and release builds show nothing.
-///  Keep at least 16dp of clearance above it.
+/// Placement follows AdMob policy: it sits in the scaffold's bottom bar, so it
+/// never overlaps content or buttons (the FAB floats above it), and it is only
+/// used on the home screen, never over dialogs, progress or while archives are
+/// being worked on. Until consent allows ad requests, and whenever an ad fails
+/// to load, it takes no space at all.
 class AdBannerSlot extends StatelessWidget {
   const AdBannerSlot({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (!kDebugMode) return const SizedBox.shrink();
-    final scheme = Theme.of(context).colorScheme;
+    if (!AdsService.isSupported()) return const SizedBox.shrink();
+    return ValueListenableBuilder<bool>(
+      valueListenable: AdsService.instance.ready,
+      builder: (context, ready, _) => ready ? const _Banner() : const SizedBox.shrink(),
+    );
+  }
+}
+
+class _Banner extends StatefulWidget {
+  const _Banner();
+
+  @override
+  State<_Banner> createState() => _BannerState();
+}
+
+class _BannerState extends State<_Banner> {
+  BannerAd? _ad;
+  AdSize? _size;
+  int? _requestedWidth;
+  int _retries = 0;
+  Timer? _retryTimer;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload when the available width changes (rotation, split screen).
+    final width = MediaQuery.sizeOf(context).width.truncate();
+    if (width != _requestedWidth) _load(width);
+  }
+
+  /// Loads a banner. The first attempt is an anchored adaptive banner; if that fails, one
+  /// immediate attempt with the classic fixed 320x50 banner (what BatchSnap uses), which is
+  /// the most widely served size, before the slow retries start.
+  Future<void> _load(int width, {bool fixedSize = false}) async {
+    _requestedWidth = width;
+    _retryTimer?.cancel();
+    // ignore: deprecated_member_use
+    final AdSize? size = fixedSize
+        ? AdSize.banner
+        // ignore: deprecated_member_use
+        : await AdSize.getAnchoredAdaptiveBannerAdSize(Orientation.portrait, width);
+    if (size == null) {
+      AdsService.instance.report('Ads: no adaptive banner size for width $width');
+      return;
+    }
+    if (!mounted || width != _requestedWidth) return;
+    final unit = AdUnits.banner(debug: kDebugMode);
+    AdsService.instance.report('Ads: loading banner ${size.width}x${size.height} (${unit == AdUnits.bannerTest ? 'TEST unit' : 'live unit'})');
+    final old = _ad;
+    final ad = BannerAd(
+      adUnitId: unit,
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (loaded) {
+          if (!mounted) {
+            loaded.dispose();
+            return;
+          }
+          AdsService.instance.report('Ads: banner loaded');
+          setState(() => _size = size);
+        },
+        onAdFailedToLoad: (failed, error) {
+          failed.dispose();
+          AdsService.instance.report('Ads: banner failed to load (code ${error.code}): ${error.message}');
+          if (!mounted) return;
+          setState(() {
+            if (_ad == failed) _ad = null;
+            _size = null;
+          });
+          if (!fixedSize) {
+            _load(_requestedWidth ?? width, fixedSize: true);
+            return;
+          }
+          // A few quiet retries (no network, no fill); then give up until the next launch.
+          if (_retries++ < 3) {
+            _retryTimer = Timer(const Duration(seconds: 60), () {
+              if (mounted) _load(_requestedWidth ?? width);
+            });
+          }
+        },
+      ),
+    );
+    setState(() {
+      _ad = ad;
+      _size = null; // hidden until it has loaded
+    });
+    old?.dispose();
+    await ad.load();
+  }
+
+  @override
+  void dispose() {
+    _retryTimer?.cancel();
+    _ad?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ad = _ad;
+    final size = _size;
+    if (ad == null || size == null) return const SizedBox.shrink();
     return SafeArea(
       top: false,
-      child: Container(
-        height: 56,
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          AppLocalizations.of(context).adBannerPlaceholder,
-          style: TextStyle(color: scheme.onSurfaceVariant),
-        ),
+      child: SizedBox(
+        width: size.width.toDouble(),
+        height: size.height.toDouble(),
+        child: AdWidget(ad: ad),
       ),
     );
   }

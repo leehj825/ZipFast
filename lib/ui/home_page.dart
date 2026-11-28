@@ -1,17 +1,14 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 
 import '../core/format_utils.dart';
-import '../core/theme.dart';
 import '../l10n/gen/app_localizations.dart';
 import '../state/app_state.dart';
 import '../state/storage_service.dart';
 import 'actions.dart';
 import 'create_sheet.dart';
+import 'file_browser.dart';
 import 'settings_page.dart';
 import 'widgets/ad_banner.dart';
 import 'widgets/format_badge.dart';
@@ -75,7 +72,7 @@ class _HomePageState extends State<HomePage> {
         ),
         body: TabBarView(children: [
           _RecentTab(query: _query),
-          const _BrowseTab(),
+          FileBrowser(root: context.read<StorageService>().appFilesDir),
         ]),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => pickAndOpenArchive(context),
@@ -316,141 +313,4 @@ class _EmptyState extends StatelessWidget {
           Text(body, textAlign: TextAlign.center),
         ]),
       );
-}
-
-// ---------------------------------------------------------------------------
-// Device folder browser
-// ---------------------------------------------------------------------------
-
-class _BrowseTab extends StatefulWidget {
-  const _BrowseTab();
-
-  @override
-  State<_BrowseTab> createState() => _BrowseTabState();
-}
-
-class _BrowseTabState extends State<_BrowseTab> {
-  late String _root;
-  late String _dir;
-  List<FileItem> _items = const [];
-  bool _failed = false;
-  final Set<String> _selected = {};
-
-  @override
-  void initState() {
-    super.initState();
-    final storage = context.read<StorageService>();
-    const shared = '/storage/emulated/0';
-    _root = Directory(shared).existsSync() ? shared : storage.appFilesDir;
-    _dir = _root;
-    _list();
-  }
-
-  void _list() {
-    try {
-      final items = StorageService.listDirectory(_dir);
-      setState(() {
-        _items = items;
-        _failed = false;
-        _selected.clear();
-      });
-    } catch (_) {
-      setState(() {
-        _items = const [];
-        _failed = true;
-      });
-    }
-  }
-
-  bool get _atRoot => p.equals(_dir, _root);
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).toString();
-
-    return PopScope(
-      canPop: _atRoot,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop && !_atRoot) {
-          _dir = p.dirname(_dir);
-          _list();
-        }
-      },
-      child: Column(children: [
-        ListTile(
-          dense: true,
-          leading: Icon(_atRoot ? Icons.sd_storage_outlined : Icons.arrow_upward),
-          title: Text(_dir, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: _atRoot ? null : Text(l10n.upOneLevel),
-          onTap: _atRoot
-              ? null
-              : () {
-                  _dir = p.dirname(_dir);
-                  _list();
-                },
-        ),
-        Expanded(
-          child: _failed
-              ? _EmptyState(title: l10n.browseNoAccessTitle, body: l10n.browseNoAccessBody)
-              : _items.isEmpty
-                  ? Center(child: Text(l10n.browseEmpty))
-                  : ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 96),
-                      itemCount: _items.length,
-                      itemBuilder: (context, i) {
-                        final item = _items[i];
-                        final isArchive = !item.isDirectory && item.format.label != '?';
-                        return ListTile(
-                          leading: item.isDirectory
-                              ? const Icon(Icons.folder, color: ZipFastColors.lockAmber)
-                              : isArchive
-                                  ? FormatBadge(item.format, size: 36)
-                                  : const Icon(Icons.insert_drive_file_outlined),
-                          title: Text(item.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: item.isDirectory
-                              ? null
-                              : Text('${formatBytes(item.size)} · ${formatDate(item.modified, locale)}'),
-                          trailing: Checkbox(
-                            value: _selected.contains(item.path),
-                            onChanged: (v) => setState(() {
-                              if (v == true) {
-                                _selected.add(item.path);
-                              } else {
-                                _selected.remove(item.path);
-                              }
-                            }),
-                          ),
-                          onTap: () {
-                            if (item.isDirectory) {
-                              _dir = item.path;
-                              _list();
-                            } else if (isArchive) {
-                              openArchive(context, item.path);
-                            } else {
-                              setState(() => _selected.contains(item.path)
-                                  ? _selected.remove(item.path)
-                                  : _selected.add(item.path));
-                            }
-                          },
-                        );
-                      },
-                    ),
-        ),
-        if (_selected.isNotEmpty)
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-                onPressed: () => showCreateSheet(context, _selected.toList()),
-                icon: const Icon(Icons.archive_outlined),
-                label: Text(l10n.compressSelected(_selected.length)),
-              ),
-            ),
-          ),
-      ]),
-    );
-  }
 }

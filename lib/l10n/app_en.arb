@@ -12,7 +12,7 @@
   "retry": "Retry",
   "delete": "Delete",
   "tabRecent": "Recent archives",
-  "tabBrowse": "Browse device",
+  "tabBrowse": "Files",
   "recentArchivesTitle": "Recent archives ({count})",
   "@recentArchivesTitle": {
     "placeholders": {
@@ -191,6 +191,82 @@
   "splitCustomMb": "Custom size (MB)",
   "splitTooSmall": "Enter a size of at least 1 MB.",
   "splitVolumesNote": "Volumes are named .001, .002, … Open the .001 file to extract.",
+  "extractLocation": "Default extract folder",
+  "extractLocationNextTo": "New folder next to the archive",
+  "saveLocation": "Default save folder for new archives",
+  "saveLocationApp": "ZipFast storage",
+  "chooseFolder": "Choose folder…",
+  "resetToDefault": "Reset to default",
+  "change": "Change",
+  "saveTo": "Save to",
+  "createSubfolder": "Put files in a new folder",
+  "askEveryTime": "Ask for a folder every time",
+  "askEveryTimeSub": "Pick the destination each time you extract or create",
+  "storageRoot": "ZipFast storage",
+  "newFolder": "New folder",
+  "folderName": "Folder name",
+  "rename": "Rename",
+  "newName": "New name",
+  "moveTo": "Move to…",
+  "moveHere": "Move here",
+  "useThisFolder": "Use this folder",
+  "chooseDestination": "Choose a folder",
+  "shareAction": "Share",
+  "shareFoldersNote": "Folders can’t be shared. Compress them first.",
+  "openWith": "Open with…",
+  "noAppToOpen": "No app can open this file.",
+  "deleteConfirmTitle": "Delete {count} items?",
+  "@deleteConfirmTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteConfirmBody": "This can’t be undone.",
+  "opNameInvalid": "That name isn’t allowed.",
+  "opNameTaken": "Something with that name already exists.",
+  "opIntoItself": "A folder can’t be moved into itself.",
+  "opFailed": "The operation failed.",
+  "showFiles": "Show files",
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refresh": "Refresh",
+  "storageHint": "Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.",
+  "saveCopyTo": "Save a copy to…",
+  "saveCopyHere": "Save to {folder}",
+  "@saveCopyHere": {
+    "placeholders": {
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseAnotherFolder": "Choose another folder…",
+  "copying": "Copying…",
+  "copyDoneTitle": "Copy complete",
+  "copiedSummary": "{count} files copied to\n{folder}",
+  "@copiedSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "folder": {
+        "type": "String"
+      }
+    }
+  },
+  "exportUnavailable": "Saving to another folder isn’t available here.",
+  "exportAccessLost": "Access to that folder was removed. Choose it again.",
+  "exportNothing": "Nothing to copy.",
+  "adPrivacy": "Ad privacy settings",
+  "adPrivacySub": "Review or change your ad consent choices",
   "settingsTitle": "Settings",
   "theme": "Theme",
   "themeSystem": "System",
@@ -203,7 +279,7 @@
   "cacheCleared": "Cache cleared",
   "licenses": "Open-source licenses",
   "about": "About",
-  "privacy": "100% offline. Your files never leave this device.",
+  "privacy": "Archives are processed offline; your files never leave this device. Only the ad banner uses the internet.",
   "version": "Version {version}",
   "@version": {
     "placeholders": {

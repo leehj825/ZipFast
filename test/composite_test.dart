@@ -165,6 +165,13 @@ void main() {
   });
 
   group('JobHandle.manual', () {
+    test('failing before anyone listens is not an unhandled error, late listeners still get it', () async {
+      final h = JobHandle.manual<int>();
+      h.fail(const CorruptArchiveException('boom'));
+      await Future<void>.delayed(const Duration(milliseconds: 10)); // would report an unhandled error
+      await expectLater(h.result, throwsA(isA<CorruptArchiveException>()));
+    });
+
     test('progress, completion and cancel hook', () async {
       var cancelled = 0;
       final h = JobHandle.manual<int>(onCancel: () => cancelled++);

@@ -29,8 +29,25 @@ android {
         versionName = flutter.versionName
     }
 
+    // Lint's release-time check crashes on some toolchains and adds nothing to a
+    // prerelease build. Run `./gradlew lint` by hand if you want the report.
+    lint {
+        checkReleaseBuilds = false
+    }
+
     buildTypes {
         release {
+            // Code shrinking (R8) is OFF: with the ads SDK it renamed Room classes, so the
+            // WorkManager that the SDK starts at launch could not create its database and the
+            // app died before its first screen. Flutter's Gradle plugin turns minify on, so it is
+            // switched off here, after the plugin ran. The rules below still protect the
+            // JNI-visible and reflection-loaded classes if shrinking is ever re-enabled.
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")

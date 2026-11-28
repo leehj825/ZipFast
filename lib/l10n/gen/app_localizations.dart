@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabBrowse.
   ///
   /// In en, this message translates to:
-  /// **'Browse device'**
+  /// **'Files'**
   String get tabBrowse;
 
   /// No description provided for @recentArchivesTitle.
@@ -704,6 +704,276 @@ abstract class AppLocalizations {
   /// **'Volumes are named .001, .002, … Open the .001 file to extract.'**
   String get splitVolumesNote;
 
+  /// No description provided for @extractLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Default extract folder'**
+  String get extractLocation;
+
+  /// No description provided for @extractLocationNextTo.
+  ///
+  /// In en, this message translates to:
+  /// **'New folder next to the archive'**
+  String get extractLocationNextTo;
+
+  /// No description provided for @saveLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Default save folder for new archives'**
+  String get saveLocation;
+
+  /// No description provided for @saveLocationApp.
+  ///
+  /// In en, this message translates to:
+  /// **'ZipFast storage'**
+  String get saveLocationApp;
+
+  /// No description provided for @chooseFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose folder…'**
+  String get chooseFolder;
+
+  /// No description provided for @resetToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default'**
+  String get resetToDefault;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @saveTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to'**
+  String get saveTo;
+
+  /// No description provided for @createSubfolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Put files in a new folder'**
+  String get createSubfolder;
+
+  /// No description provided for @askEveryTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for a folder every time'**
+  String get askEveryTime;
+
+  /// No description provided for @askEveryTimeSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the destination each time you extract or create'**
+  String get askEveryTimeSub;
+
+  /// No description provided for @storageRoot.
+  ///
+  /// In en, this message translates to:
+  /// **'ZipFast storage'**
+  String get storageRoot;
+
+  /// No description provided for @newFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'New folder'**
+  String get newFolder;
+
+  /// No description provided for @folderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Folder name'**
+  String get folderName;
+
+  /// No description provided for @rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get rename;
+
+  /// No description provided for @newName.
+  ///
+  /// In en, this message translates to:
+  /// **'New name'**
+  String get newName;
+
+  /// No description provided for @moveTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to…'**
+  String get moveTo;
+
+  /// No description provided for @moveHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Move here'**
+  String get moveHere;
+
+  /// No description provided for @useThisFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this folder'**
+  String get useThisFolder;
+
+  /// No description provided for @chooseDestination.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a folder'**
+  String get chooseDestination;
+
+  /// No description provided for @shareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareAction;
+
+  /// No description provided for @shareFoldersNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Folders can’t be shared. Compress them first.'**
+  String get shareFoldersNote;
+
+  /// No description provided for @openWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Open with…'**
+  String get openWith;
+
+  /// No description provided for @noAppToOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'No app can open this file.'**
+  String get noAppToOpen;
+
+  /// No description provided for @deleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {count} items?'**
+  String deleteConfirmTitle(int count);
+
+  /// No description provided for @deleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This can’t be undone.'**
+  String get deleteConfirmBody;
+
+  /// No description provided for @opNameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That name isn’t allowed.'**
+  String get opNameInvalid;
+
+  /// No description provided for @opNameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Something with that name already exists.'**
+  String get opNameTaken;
+
+  /// No description provided for @opIntoItself.
+  ///
+  /// In en, this message translates to:
+  /// **'A folder can’t be moved into itself.'**
+  String get opIntoItself;
+
+  /// No description provided for @opFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The operation failed.'**
+  String get opFailed;
+
+  /// No description provided for @showFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Show files'**
+  String get showFiles;
+
+  /// No description provided for @selectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(int count);
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @storageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Results are saved in ZipFast’s own folder. Open or share a file to use it in other apps.'**
+  String get storageHint;
+
+  /// No description provided for @saveCopyTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a copy to…'**
+  String get saveCopyTo;
+
+  /// No description provided for @saveCopyHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to {folder}'**
+  String saveCopyHere(String folder);
+
+  /// No description provided for @chooseAnotherFolder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another folder…'**
+  String get chooseAnotherFolder;
+
+  /// No description provided for @copying.
+  ///
+  /// In en, this message translates to:
+  /// **'Copying…'**
+  String get copying;
+
+  /// No description provided for @copyDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy complete'**
+  String get copyDoneTitle;
+
+  /// No description provided for @copiedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} files copied to\n{folder}'**
+  String copiedSummary(int count, String folder);
+
+  /// No description provided for @exportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving to another folder isn’t available here.'**
+  String get exportUnavailable;
+
+  /// No description provided for @exportAccessLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to that folder was removed. Choose it again.'**
+  String get exportAccessLost;
+
+  /// No description provided for @exportNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to copy.'**
+  String get exportNothing;
+
+  /// No description provided for @adPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad privacy settings'**
+  String get adPrivacy;
+
+  /// No description provided for @adPrivacySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Review or change your ad consent choices'**
+  String get adPrivacySub;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -779,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacy.
   ///
   /// In en, this message translates to:
-  /// **'100% offline. Your files never leave this device.'**
+  /// **'Archives are processed offline; your files never leave this device. Only the ad banner uses the internet.'**
   String get privacy;
 
   /// No description provided for @version.

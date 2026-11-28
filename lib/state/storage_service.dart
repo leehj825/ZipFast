@@ -48,21 +48,47 @@ class StorageService {
     return StorageService._(dir, dir, dir);
   }
 
+  /// Finds the app's folders. Every lookup has a fallback, so a failing
+  /// `path_provider` (it talks to Android through JNI) can never keep the app
+  /// from starting: the cache folder is then the process temp directory (the
+  /// Flutter engine points it at the app cache) and the files folder its sibling.
   static Future<StorageService> create() async {
-    final cache = await getTemporaryDirectory();
+    String cachePath;
+    try {
+      cachePath = (await getTemporaryDirectory()).path;
+    } catch (_) {
+      cachePath = Directory.systemTemp.path;
+    }
+    final cache = Directory(cachePath);
     final temp = Directory(p.join(cache.path, 'zipfast'));
     try {
       if (temp.existsSync()) temp.deleteSync(recursive: true);
     } catch (_) {}
     temp.createSync(recursive: true);
-    Directory files;
+    String filesPath;
     try {
-      files = await getExternalStorageDirectory() ??
-          await getApplicationDocumentsDirectory();
+      filesPath = (await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory()).path;
     } catch (_) {
-      files = await getApplicationDocumentsDirectory();
+      try {
+        filesPath = (await getApplicationDocumentsDirectory()).path;
+      } catch (_) {
+        filesPath = p.join(cache.parent.path, 'files');
+      }
     }
-    return StorageService._(temp.path, files.path, cache.path);
+    Directory files = Directory(filesPath);
+    try {
+      files.createSync(recursive: true);
+    } catch (_) {
+      // Last resort: a folder inside the cache, which is known to be writable.
+      files = Directory(p.join(cache.path, 'zipfast_files'))..createSync(recursive: true);
+    }
+    final service = StorageService._(temp.path, files.path, cache.path);
+    for (final dir in [service.fallbackExtractRoot, service.createRoot]) {
+      try {
+        Directory(dir).createSync(recursive: true);
+      } catch (_) {}
+    }
+    return service;
   }
 
   /// Deletes preview/scratch files.
@@ -99,6 +125,10 @@ class StorageService {
     Directory(fallbackExtractRoot).createSync(recursive: true);
     return (parent: fallbackExtractRoot, usedFallback: true);
   }
+
+  /// Whether anything (file, folder, link) exists at [path].
+  static bool pathExists(String path) =>
+      FileSystemEntity.typeSync(path, followLinks: false) != FileSystemEntityType.notFound;
 
   /// Returns `true` if files can be created in [dir].
   static bool isWritable(String dir) {
